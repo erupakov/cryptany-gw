@@ -44,8 +44,9 @@ class EthController extends Controller
     }
 
     //
-	public function getTransientAddress($id)
+	public function getTransientAddress(Request $request, $id)
 	{
+		$request->header['Authentication'];
 		$user = App\User::where( 'appToken', $id );
 
 		if (!isset($user)) {
@@ -72,8 +73,18 @@ class EthController extends Controller
 	}
 
 	// Hook to catch blockchain events
-	public function getTxStatusHook(Request $request)
+	public function getTxStatusHookUnconfirmed(Request $request)
 	{
-		Log::info('Got hook request:'. $request);
+		Log::info('Got hook request: unconfirmed');
+		Log::debug($request);
+	
 	}
+
+	// Hook to catch blockchain events
+	public function getTxStatusHookConfirmed(Request $request)
+	{
+		Log::info('Got hook request confirmed:'. $request);
+		Log::debug($request);
+	}
+
 }

@@ -64,19 +64,7 @@ class EthController extends Controller
             )
         );
 
-        $webHook = new \BlockCypher\Api\WebHook(); 
-        $webHook->setUrl("https://cgw.cryptany.io/eth/hook/txstat");
-        $webHook->setEvent('unconfirmed-tx');
-
-        try {
-            $webHook->create($this->_apiContext);
-            Log::info("Successfully set unconfirmed-tx hook: " . $webHook);
-        }
-        catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
-            // This will print the detailed information on the exception. 
-            //REALLY HELPFUL FOR DEBUGGING
-            Log::error("Error creating ETH webHook: " . $ex->getData());
-        }
+        $this->_setupHooks();
     }
 
     /**
@@ -128,9 +116,10 @@ class EthController extends Controller
             $wallet->save();
         } catch (Exception $ex) {
             Log::error('Error creating new wallet:'.$ex);
+            abort(401, 'Something went terribly wrong');
         }
 
-        return json_encode(['address'=> $addressKeyChain->getAddress()]);
+        return json_encode(['address'=> $wallet->address]);
     }
 
      /**
@@ -159,25 +148,76 @@ class EthController extends Controller
      *
      * @return nothing
      */    
-    public function getTxStatusHookUnconfirmed(Request $request)
+    public function getTxStatusHook(Request $request)
     {
-        Log::info('Got hook request: unconfirmed');
+        Log::info('Got hook event, parsing');
         Log::debug($request);
+        // check wallet and transaction id
+        try {
+            $tx = json_decode($request, true);
+            $wallet = App\Wallet::where(['address'=>$tx['addresses'][0]]);
+            $srcAddress= $tx['addresses'][1];
+
+            if (!isset($wallet)) {
+                $wallet = App\Wallet::where(['address'=>$tx['addresses'][1]]);
+                $srcAddress= $tx['addresses'][0];
+            }
+            if (!isset($wallet)) {
+                Log::error('None of the addresses involved in transaction are ours');
+                return;
+            }
+
+            // get transaction
+            $transaction = App\Transaction::firstOrCreate(['txHash'=>$tx['hash']]);
+            $transaction->walletId = $wallet->id;
+            $transaction->srcAmount = $tx['total'];
+            $transaction->dstAmount = 1; // 1 USD
+            $transaction->gasAmount = $tx['fee'];
+            $transaction->srcCurrencyId = 3; // ETH
+            $transaction->dstCurrencyId = 0; // USD
+            $transaction->status = 2; // confirmed
+            $transaction->save();
+            // save event
+            $txevent = new App\TxEvent();
+            $txevent->tx_id = $transaction->id;
+            $txevent->eventTime = Carbon::now();
+            $txevent->report = $request->getContent();
+            $txevent->save();
+        } catch (Exception $ex) {
+            Log::error('Error parsing webhook data' . $ex->message());
+        }
     }
 
     /**
-     * Hook to catch blockchain events
+     * Get transaction status given by Wallet address
      *
      * @param \Illuminate\Http\Request $request Request to process
      *
-     * @method getTxStatusHookConfirmed
+     * @method getTxStatusByAddress
      *
      * @return nothing
      */    
-    public function getTxStatusHookConfirmed(Request $request)
+    public function getTxStatusByAddress(Request $request)
     {
-        Log::info('Got hook request confirmed:'. $request);
-        Log::debug($request);
+        // check if all required parameters are in place
+        if ($request->input('wallet')==null) {
+            Log::error('wallet parameter is missing');
+            abort(404, 'wallet parameter is mandatory for this method');
+        }
+        
+        $wallet = App\Wallet::where(['address'=>$request->input('wallet')]);
+        if (!isset($wallet)) {
+            Log::error('Specified wallet address does not exist');
+            abort(404, 'Wallet address not found');            
+        }
+        // Or else, check transactions
+        if ($wallet->transactions()->count()>0) {
+            // there is transaction, for now it is enough to check only
+            // transaction existance
+            return json_encode(['status'=>'confirmed']);
+        } else {
+            return json_encode(['status'=>'not registered']);
+        }
     }
 
     /**
@@ -214,5 +254,51 @@ class EthController extends Controller
             );
             return false;
         }
+    }
+
+    /**
+     * Check webhooks for existance and sets them up if they are absent
+     *
+     * @param string $address the wallet address to listen for
+     * 
+     * @return void
+     */
+    private function _setupHooks($address)
+    {
+        $webHook = new \BlockCypher\Api\WebHook(); 
+        $webHook->setUrl("https://cgw.cryptany.io/eth/hook/txstat");
+        $webHook->setEvent('unconfirmed-tx');
+        $webHook->setAddress($address);
+
+        try {
+            $webHook->create($this->_apiContext);
+            Log::info(
+                "Successfully set unconfirmed-tx hook: " . $webHook .
+                " for address " . $address
+            );
+        }
+        catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
+            // This will print the detailed information on the exception. 
+            //REALLY HELPFUL FOR DEBUGGING
+            Log::error("Error creating ETH unconfirmed-tx webHook: " . $ex->getData());
+        }
+
+        $webHook = new \BlockCypher\Api\WebHook(); 
+        $webHook->setUrl("https://cgw.cryptany.io/eth/hook/txstat");
+        $webHook->setEvent('confirmed-tx');
+        $webHook->setAddress($address);
+
+        try {
+            $webHook->create($this->_apiContext);
+            Log::info(
+                "Successfully set confirmed-tx hook: " . $webHook .
+                " for address " . $address
+            );
+        }
+        catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
+            // This will print the detailed information on the exception. 
+            //REALLY HELPFUL FOR DEBUGGING
+            Log::error("Error creating ETH confirmed webHook: " . $ex->getData());
+        }        
     }
 }

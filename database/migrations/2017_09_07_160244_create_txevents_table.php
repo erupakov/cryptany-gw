@@ -13,14 +13,17 @@ class CreateTxeventsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tx_events', function (Blueprint $table) {
-            $table->increments('id');
-			$table->integer('tx_id')->unsigned();
-			$table->date('eventTime');
-			$table->string('report');
-            $table->timestamps();
-            $table->foreign('tx_id')->references('id')->on('transactions')->onDelete('cascade');
-        });
+        Schema::create(
+            'tx_events', 
+            function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('tx_id')->unsigned();
+                $table->date('eventTime');
+                $table->string('report');
+                $table->timestamps();
+                $table->foreign('tx_id')->references('id')->on('transactions')->onDelete('cascade');
+            }
+        );
     }
 
     /**

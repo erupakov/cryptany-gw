@@ -10,7 +10,8 @@
         "vlucas/phpdotenv": "~2.2",
 		"predis/predis": "~1.0",
         "blockcypher/php-client": "*",
-        "illuminate/redis": ">=5.4"
+        "illuminate/redis": ">=5.4",
+        "squizlabs/php_codesniffer": "^3.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

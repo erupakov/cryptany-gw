@@ -19,7 +19,6 @@ use Closure;
  *
  * @category Middleware
  * @package  App\Http\Middleware
- * @class    PreflightResponse
  * @author   Eugene Rupakov <eugene.rupakov@gmail.com>
  * @license  Apache Common License 2.0
  * @link     http://cgw.cryptany.io
@@ -40,8 +39,11 @@ class PreflightResponse
         $http_origin = isset($_SERVER['HTTP_ORIGIN']) ? 
             $_SERVER['HTTP_ORIGIN'] : false;
 
-        $allowed_origins = ['https://cgw.cryptany.io', 'https://mobile.cryptany.io'];
-        
+        $allowed_origins = [
+            'https://cgw.cryptany.io', 'https://mobile.cryptany.io',
+            'https://www.forsta.com'
+        ];
+
         if (in_array($http_origin, $allowed_origins)) {
             return $next($request)->header('Access-Control-Allow-Origin', '*')
                 ->header(

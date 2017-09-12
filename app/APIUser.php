@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * APIUser model
+ * PHP Version 7
+ *
+ * @category Model
+ * @package  App\Http\Model
+ * @author   Eugene Rupakov <eugene.rupakov@gmail.com>
+ * @license  Apache Common License 2.0
+ * @link     http://cgw.cryptany.io
+ */
 namespace App;
 
 use Illuminate\Auth\Authenticatable;
@@ -8,6 +17,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 
+/**
+ * APIUser model, used to manipulate any API user
+ *
+ * @category Model
+ * @package  App\Http\Model
+ * @author   Eugene Rupakov <eugene.rupakov@gmail.com>
+ * @license  Apache Common License 2.0
+ * @link     http://cgw.cryptany.io
+ */
 class APIUser extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable;
@@ -18,7 +36,7 @@ class APIUser extends Model implements AuthenticatableContract, AuthorizableCont
      * @var array
      */
     protected $fillable = [
-        'appToken'
+        'appToken', 'username'
     ];
 
     /**
@@ -29,7 +47,7 @@ class APIUser extends Model implements AuthenticatableContract, AuthorizableCont
     protected $hidden = [
     ];
 
- 	/**
+    /**
      * The table associated with the model.
      *
      * @var string

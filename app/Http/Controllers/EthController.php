@@ -14,7 +14,7 @@ namespace App\Http\Controllers;
 use \App\User;
 use \Illuminate\Http\Request;
 use \Log;
-
+use Carbon\Carbon;
 /**
  * Ethereum blockchain actions controller, used to perform actions for Ethereum 
  * blockchain
@@ -90,22 +90,45 @@ class EthController extends Controller
      */
     public function getTransientAddress(Request $request)
     {
-        $request->header['Authentication'];
-        $user = App\User::where('appToken', $id);
-
-        if (!isset($user)) {
-            Log::error('Wrong appToken presented: '.$id);
-            abort(401, "Wrong appToken");
+        // check if all required parameters are in place
+        if ($request->input('email')==null) {
+            Log::error('email parameter is missing');
+            abort(404, 'email parameter is mandatory for this method');
         }
 
-        //		$wallet = new App\Wallet;
-        //		$wallet->userId = $user->id;
-        $addressClient = new \BlockCypher\Client\AddressClient($this->_apiContext);
-        $address = $addressClient->generateAddress();
+        $apiuser = $this->_checkAPIUserExists($request->header('Authentication'));
 
-        Log::info('New address generated:' . $address->getAddress());
+        if ($apiuser===false || !isset($apiuser)) {
+            Log::error('Wrong or empty appToken presented');
+            abort(401, "Wrong username/appToken pair");
+        }
 
-        return json_encode(['address'=> $address->getAddress()]);
+        // Find customer by his email
+        $user = App\User::firstOrCreate(['email' => $request->input('email')]);
+        $user->save(); // in case the user is just created
+
+        $wallet = new App\Wallet;
+        $wallet->apiUserId = $apiuser->id;
+        $wallet->userId = $user->id;
+
+        try {
+            $addressClient = new \BlockCypher\Client\AddressClient($this->_apiContext);
+            $addressKeyChain = $addressClient->generateAddress();
+            Log::info('New address generated:' . $addressKeyChain->getAddress());
+
+            // fill in newly created wallet
+            $wallet->publicKey = $addressKeyChain->getPublic();
+            $wallet->privateKey = $addressKeyChain->getPrivate();
+            $wallet->address = $addressKeyChain->getAddress();
+            $wallet->wif = $addressKeyChain->getWif();
+            $wallet->isActive = true;
+            $wallet->expirationTime = Carbon::now()->addYear();
+            $wallet->save();
+        } catch (Exception $ex) {
+            Log::error('Error creating new wallet:'.$ex);
+        }
+
+        return json_encode(['address'=> $addressKeyChain->getAddress()]);
     }
 
      /**
@@ -155,4 +178,39 @@ class EthController extends Controller
         Log::debug($request);
     }
 
+    /**
+     * Check user authentication
+     *
+     * @param string $authHeader authentication header from the request
+     *
+     * @return mixed instance of the user of FALSE if something went wrong
+     */
+    private function _checkUserExists($authHeader)
+    {
+        if (strstr($authHeader, 'Basic')!=0) {
+            Log::error(
+                'Wrong auth header, only Basic auth is supported: ' . $authHeader
+            );
+            return false;
+        }
+
+        try 
+        {
+            $authParts = explode(' ', $authHeader);
+            $testStr = base64_decode($authParts[1]);
+            $credendials = explode(':', $testStr);
+            $user = App\APIUser::where(
+                [
+                    'username'=>$credendials[0], 
+                    'appToken'=>$credendials[1]
+                ]
+            );
+            return $user;
+        } catch(Exception $ex) {
+            Log::error(
+                'Error during checking auth header:' . $ex->Message()
+            );
+            return false;
+        }
+    }
 }

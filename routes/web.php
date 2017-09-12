@@ -15,6 +15,16 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->get('/eth/addr/{id}', 'EthController@getTransientAddress');
-$router->get('/eth/txstat/{hash}', 'EthController@getTxStatus');
+$router->get('/txs/check/{hash}', 'EthController@getTxStatus');
+$router->post('/txs/check', 'EthController@getTxStatus');
+$router->post('/txs/all', 'TxController@getAll');
+$router->post('/txs/one', 'TxController@getTransaction');
+$router->post('/txs/new', 'TxController@createNewTransaction');
 $router->post('/eth/hook/txstat', 'EthController@getTxStatusHook');
+$router->post('/user/signin', 'UserController@processSignIn');
+$router->post('/user/verifycode', 'UserController@processVerifyCode');
+$router->post('/user/signup', 'UserController@processSignUp');
+$router->post('/user/resetpwd', 'UserController@processResetPassword');
+$router->post('/data/rate', 'DataController@getRates');
+$router->get('/data/addr', 'EthController@getTransientAddress');
+$router->post('/data/addr', 'EthController@getTransientAddress');

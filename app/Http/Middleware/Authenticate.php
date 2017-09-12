@@ -17,7 +17,8 @@ class Authenticate
     /**
      * Create a new middleware instance.
      *
-     * @param  \Illuminate\Contracts\Auth\Factory  $auth
+     * @param \Illuminate\Contracts\Auth\Factory $auth Auth object to handle
+     *
      * @return void
      */
     public function __construct(Auth $auth)
@@ -28,9 +29,10 @@ class Authenticate
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string|null  $guard
+     * @param \Illuminate\Http\Request $request Request to handle
+     * @param \Closure                 $next    Next middleware in a chain
+     * @param string|null              $guard   Guard string
+     *
      * @return mixed
      */
     public function handle($request, Closure $next, $guard = null)

@@ -45,8 +45,8 @@ class EthController extends Controller
     /**
      * Construction for the class, performs API context initialization
      *
-     * @function __construct
-     * @return   nothing
+     * @method __construct
+     * @return nothing
      */
     public function __construct()
     {
@@ -64,7 +64,7 @@ class EthController extends Controller
               'log.LogLevel' => 'DEBUG'
             )
         );
-        
+
         $webHook = new \BlockCypher\Api\WebHook(); 
         $webHook->setUrl("http://cgw.cryptany.io/eth/hook/txstat");
         $webHook->setEvent('unconfirmed-tx');
@@ -83,8 +83,9 @@ class EthController extends Controller
     /**
      * Method for handling creation of new transient wallet API method
      *
-     * @function        getTransientAddress
-     * @param($request)
+     * @param \Illuminate\Http\Request $request Request to process
+     *
+     * @method getTransientAddress
      *
      * @return nothing
      */
@@ -98,8 +99,8 @@ class EthController extends Controller
             abort(401, "Wrong appToken");
         }
 
-//		$wallet = new App\Wallet;
-//		$wallet->userId = $user->id;
+        //		$wallet = new App\Wallet;
+        //		$wallet->userId = $user->id;
         $addressClient = new \BlockCypher\Client\AddressClient($this->_apiContext);
         $address = $addressClient->generateAddress();
 
@@ -111,9 +112,10 @@ class EthController extends Controller
      /**
       * Returns status of the transaction given its hash
       *
-      * @function        getTxStatus
-      * @param($request)
-      * @param($hash)
+      * @param \Illuminate\Http\Request $request Request to process
+      * @param string                   $hash    Transaction hash to check
+      *
+      * @method getTxStatus
       *
       * @return nothing
       */
@@ -127,8 +129,9 @@ class EthController extends Controller
     /**
      * Hook to catch blockchain events
      *
-     * @function        getTxStatusHookUnconfirmed
-     * @param($request)
+     * @param \Illuminate\Http\Request $request Request to process
+     *
+     * @method getTxStatusHookUnconfirmed
      *
      * @return nothing
      */    
@@ -141,8 +144,9 @@ class EthController extends Controller
     /**
      * Hook to catch blockchain events
      *
-     * @function        getTxStatusHookConfirmed
-     * @param($request)
+     * @param \Illuminate\Http\Request $request Request to process
+     *
+     * @method getTxStatusHookConfirmed
      *
      * @return nothing
      */    

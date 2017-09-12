@@ -37,8 +37,21 @@ class PreflightResponse
      */
     public function handle($request, Closure $next)
     {        
-        if ($request->getMethod() === "OPTIONS") {
-            return response('');
+        $http_origin = isset($_SERVER['HTTP_ORIGIN']) ? 
+            $_SERVER['HTTP_ORIGIN'] : false;
+
+        $allowed_origins = ['https://cgw.cryptany.io', 'https://mobile.cryptany.io'];
+        
+        if (in_array($http_origin, $allowed_origins)) {
+            return $next($request)->header('Access-Control-Allow-Origin', '*')
+                ->header(
+                    'Access-Control-Allow-Methods', 
+                    'POST, GET, OPTIONS, PUT, DELETE'
+                )
+                ->header(
+                    'Access-Control-Allow-Headers', 
+                    'Content-Type, Accept, Authorization, X-Requested-With'
+                );
         }
 
         return $next($request);

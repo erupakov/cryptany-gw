@@ -1,90 +1,155 @@
 <?php
-
+/**
+ * Ethereum blockchain actions controller
+ * PHP Version 7
+ *
+ * @category Controller
+ * @package  App\Http\Controllers
+ * @author   Eugene Rupakov <eugene.rupakov@gmail.com>
+ * @license  Apache Common License 2.0
+ * @link     http://cgw.cryptany.io
+ */
 namespace App\Http\Controllers;
 
 use \App\User;
 use \Illuminate\Http\Request;
 use \Log;
 
-
+/**
+ * Ethereum blockchain actions controller, used to perform actions for Ethereum 
+ * blockchain
+ *
+ * @category Controller
+ * @package  App\Http\Controllers
+ * @class    EthController
+ * @author   Eugene Rupakov <eugene.rupakov@gmail.com>
+ * @license  Apache Common License 2.0
+ * @link     http://cgw.cryptany.io
+ */
 class EthController extends Controller
 {
-	private $_token = "f7948af1945f4f779f4deb8988acec91";
+    /**
+     * Holds token for blockchain API
+     *
+     * @var _token
+     */
+    const BITCHAIN_TOKEN = "f7948af1945f4f779f4deb8988acec91";
+
     /**
      * Create a new controller instance.
      *
      * @return void
-	 */
-	private $_apiContext;
+     */
+    private $_apiContext;
 
+    /**
+     * Construction for the class, performs API context initialization
+     *
+     * @function __construct
+     * @return   nothing
+     */
     public function __construct()
     {
-		$this->_apiContext = new \BlockCypher\Rest\ApiContext(new \BlockCypher\Auth\SimpleTokenCredential($this->_token),'main','eth');
+        $this->_apiContext = new \BlockCypher\Rest\ApiContext(
+            new \BlockCypher\Auth\SimpleTokenCredential(BITCHAIN_TOKEN), 
+            'main', 
+            'eth' 
+        );
 
-		$this->_apiContext->setConfig(
-			array(
-			  'mode' => 'sandbox',
-			  'log.LogEnabled' => true,
-			  'log.FileName' => 'BlockCypher.log',
-			  'log.LogLevel' => 'DEBUG'
-			)
-	  	);
-		$webHook = new \BlockCypher\Api\WebHook(); 
-		$webHook->setUrl("http://cgw.cryptany.io/eth/hook/txstat");
-		$webHook->setEvent('unconfirmed-tx');
-		try {
-			$webHook->create($this->_apiContext);
-			Log::info( "Successfully set unconfirmed-tx hook: " . $webHook );
-		}
-		catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
-			// This will print the detailed information on the exception. 
-			//REALLY HELPFUL FOR DEBUGGING
-			Log::error( "Error creating ETH webHook: " . $ex->getData() );
-		}		
+        $this->_apiContext->setConfig(
+            array(
+              'mode' => 'sandbox',
+              'log.LogEnabled' => true,
+              'log.FileName' => 'BlockCypher.log',
+              'log.LogLevel' => 'DEBUG'
+            )
+        );
+        
+        $webHook = new \BlockCypher\Api\WebHook(); 
+        $webHook->setUrl("http://cgw.cryptany.io/eth/hook/txstat");
+        $webHook->setEvent('unconfirmed-tx');
+
+        try {
+            $webHook->create($this->_apiContext);
+            Log::info("Successfully set unconfirmed-tx hook: " . $webHook);
+        }
+        catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
+            // This will print the detailed information on the exception. 
+            //REALLY HELPFUL FOR DEBUGGING
+            Log::error("Error creating ETH webHook: " . $ex->getData());
+        }
     }
 
-    //
-	public function getTransientAddress(Request $request, $id)
-	{
-		$request->header['Authentication'];
-		$user = App\User::where( 'appToken', $id );
+    /**
+     * Method for handling creation of new transient wallet API method
+     *
+     * @function        getTransientAddress
+     * @param($request)
+     *
+     * @return nothing
+     */
+    public function getTransientAddress(Request $request)
+    {
+        $request->header['Authentication'];
+        $user = App\User::where('appToken', $id);
 
-		if (!isset($user)) {
-			Log::error('Wrong appToken presented: '.$id);
-			abort(401, "Wrong appToken" );
-		}
+        if (!isset($user)) {
+            Log::error('Wrong appToken presented: '.$id);
+            abort(401, "Wrong appToken");
+        }
 
 //		$wallet = new App\Wallet;
 //		$wallet->userId = $user->id;
-		$addressClient = new \BlockCypher\Client\AddressClient($this->_apiContext);
-		$address = $addressClient->generateAddress();
-	
-		Log::info('New address generated:' . $address->getAddress());
+        $addressClient = new \BlockCypher\Client\AddressClient($this->_apiContext);
+        $address = $addressClient->generateAddress();
 
-		return json_encode( ['address'=> $address->getAddress()] );
-	}
+        Log::info('New address generated:' . $address->getAddress());
 
-	// Returns status of the transaction given its hash
-	public function getTxStatus($hash)
-	{
-		$txClient = new \BlockCypher\Client\TXClient( $this->_apiContext );
-		$tx = $txClient->get($hash);
-		return json_encode( ['confirmed'=>$tx->confirmed] );
-	}
+        return json_encode(['address'=> $address->getAddress()]);
+    }
 
-	// Hook to catch blockchain events
-	public function getTxStatusHookUnconfirmed(Request $request)
-	{
-		Log::info('Got hook request: unconfirmed');
-		Log::debug($request);
-	
-	}
+     /**
+      * Returns status of the transaction given its hash
+      *
+      * @function        getTxStatus
+      * @param($request)
+      * @param($hash)
+      *
+      * @return nothing
+      */
+    public function getTxStatus($request, $hash)
+    {
+        $txClient = new \BlockCypher\Client\TXClient($this->_apiContext);
+        $tx = $txClient->get($hash);
+        return json_encode(['confirmed'=>$tx->confirmed]);
+    }
 
-	// Hook to catch blockchain events
-	public function getTxStatusHookConfirmed(Request $request)
-	{
-		Log::info('Got hook request confirmed:'. $request);
-		Log::debug($request);
-	}
+    /**
+     * Hook to catch blockchain events
+     *
+     * @function        getTxStatusHookUnconfirmed
+     * @param($request)
+     *
+     * @return nothing
+     */    
+    public function getTxStatusHookUnconfirmed(Request $request)
+    {
+        Log::info('Got hook request: unconfirmed');
+        Log::debug($request);
+    }
+
+    /**
+     * Hook to catch blockchain events
+     *
+     * @function        getTxStatusHookConfirmed
+     * @param($request)
+     *
+     * @return nothing
+     */    
+    public function getTxStatusHookConfirmed(Request $request)
+    {
+        Log::info('Got hook request confirmed:'. $request);
+        Log::debug($request);
+    }
 
 }

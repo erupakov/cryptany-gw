@@ -1,6 +1,7 @@
 <?php
 /**
  * Session model, represent user session in ORM
+ * PHP Version 7
  *
  * @category Model
  * @package  App

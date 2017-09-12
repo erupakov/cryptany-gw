@@ -1,6 +1,7 @@
 <?php
 /**
  * Transaction events model, represent transaction events in ORM
+ * PHP Version 7
  *
  * @category Model
  * @package  App

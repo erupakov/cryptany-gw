@@ -61,7 +61,7 @@ $app->singleton(
 
 $app->middleware(
     [
-    Middleware\PreflightResponse::class
+	    App\Http\Middleware\PreflightResponse::class
     ]
 );
 

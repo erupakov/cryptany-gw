@@ -1,6 +1,6 @@
 <?php
 /**
- * Ethereum blockchain actions controller
+ * Generic transaction actions controller
  * PHP Version 7
  *
  * @category Controller
@@ -16,17 +16,16 @@ use \Illuminate\Http\Request;
 use \Log;
 
 /**
- * Ethereum blockchain actions controller, used to perform actions for Ethereum 
- * blockchain
+ * Generic blockchain actions controller, used to perform actions for all
+ * blockchains
  *
  * @category Controller
  * @package  App\Http\Controllers
- * @class    EthController
  * @author   Eugene Rupakov <eugene.rupakov@gmail.com>
  * @license  Apache Common License 2.0
  * @link     http://cgw.cryptany.io
  */
-class EthController extends Controller
+class TxController extends Controller
 {
     /**
      * Holds token for blockchain API
@@ -81,45 +80,30 @@ class EthController extends Controller
     }
 
     /**
-     * Method for handling creation of new transient wallet API method
+     * Method returns all registered user transactions (within our system)
      *
      * @param \Illuminate\Http\Request $request Request to process
      *
-     * @method getTransientAddress
+     * @method getAll
      *
      * @return nothing
      */
-    public function getTransientAddress(Request $request)
+    public function getAll(Request $request)
     {
-        $request->header['Authentication'];
-        $user = App\User::where('appToken', $id);
-
-        if (!isset($user)) {
-            Log::error('Wrong appToken presented: '.$id);
-            abort(401, "Wrong appToken");
-        }
-
-        //		$wallet = new App\Wallet;
-        //		$wallet->userId = $user->id;
-        $addressClient = new \BlockCypher\Client\AddressClient($this->_apiContext);
-        $address = $addressClient->generateAddress();
-
-        Log::info('New address generated:' . $address->getAddress());
-
-        return json_encode(['address'=> $address->getAddress()]);
+        return '';
     }
 
-     /**
-      * Returns status of the transaction given its hash
-      *
-      * @param \Illuminate\Http\Request $request Request to process
-      * @param string                   $hash    Transaction hash to check
-      *
-      * @method getTxStatus
-      *
-      * @return nothing
-      */
-    public function getTxStatus($request, $hash)
+    /**
+     * Returns details of transaction in question
+     *
+     * @param \Illuminate\Http\Request $request Request to process
+     * @param string                   $hash    Transaction hash to check
+     *
+     * @method getTxStatus
+     *
+     * @return nothing
+     */
+    public function getTransaction($request, $hash)
     {
         $txClient = new \BlockCypher\Client\TXClient($this->_apiContext);
         $tx = $txClient->get($hash);
@@ -127,33 +111,17 @@ class EthController extends Controller
     }
 
     /**
-     * Hook to catch blockchain events
+     * Method creates new transaction with specified parameters
      *
      * @param \Illuminate\Http\Request $request Request to process
      *
-     * @method getTxStatusHookUnconfirmed
+     * @method createNewTransaction
      *
      * @return nothing
      */    
-    public function getTxStatusHookUnconfirmed(Request $request)
+    public function createNewTransaction(Request $request)
     {
         Log::info('Got hook request: unconfirmed');
         Log::debug($request);
     }
-
-    /**
-     * Hook to catch blockchain events
-     *
-     * @param \Illuminate\Http\Request $request Request to process
-     *
-     * @method getTxStatusHookConfirmed
-     *
-     * @return nothing
-     */    
-    public function getTxStatusHookConfirmed(Request $request)
-    {
-        Log::info('Got hook request confirmed:'. $request);
-        Log::debug($request);
-    }
-
 }

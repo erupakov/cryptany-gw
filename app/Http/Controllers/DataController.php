@@ -7,13 +7,13 @@ namespace App\Http\Controllers;
 
 class EthController extends Controller
 {
-	private $_token = "f7948af1945f4f779f4deb8988acec91";
+    private $_token = "f7948af1945f4f779f4deb8988acec91";
     /**
      * Create a new controller instance.
      *
      * @return void
 	 */
-	private $_apiContext;
+    private $_apiContext;
 
     public function __construct()
     {
@@ -27,13 +27,13 @@ class EthController extends Controller
 			  'log.LogLevel' => 'DEBUG'
 			)
 	  	);
-		$webHook = new \BlockCypher\Api\WebHook(); 
-		$webHook->setUrl("http://cgw.cryptany.io/eth/hook/txstat");
-		$webHook->setEvent('unconfirmed-tx');
-		try {
-			$webHook->create($this->_apiContext);
-			//Log::info( "Successfully set unconfirmed-tx hook: " . $webHook );
-		}
+        $webHook = new \BlockCypher\Api\WebHook(); 
+        $webHook->setUrl("http://cgw.cryptany.io/eth/hook/txstat");
+        $webHook->setEvent('unconfirmed-tx');
+        try {
+            $webHook->create($this->_apiContext);
+            //Log::info( "Successfully set unconfirmed-tx hook: " . $webHook );
+        }
 		catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
 			// This will print the detailed information on the exception. 
 			//REALLY HELPFUL FOR DEBUGGING

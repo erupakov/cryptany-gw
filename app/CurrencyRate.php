@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @category Model
  * @package  App
- * @class    CurrencyRate
  * @author   Eugene Rupakov <eugene.rupakov@gmail.com>
  * @license  Apache Common License 2.0
  * @link     http://cgw.cryptany.io
@@ -34,10 +33,10 @@ class CurrencyRate extends Model
     protected $table = 'rates';
     //
     /**
-     * Function currency, return currency model instance
+     * Function currency, return related currency model instance
      *
-     * @function currency
-     * @return   currency model instance
+     * @method currency
+     * @return currency model instance
      */
     public function currency()
     {

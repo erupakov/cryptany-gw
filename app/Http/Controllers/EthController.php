@@ -21,7 +21,6 @@ use \Log;
  *
  * @category Controller
  * @package  App\Http\Controllers
- * @class    EthController
  * @author   Eugene Rupakov <eugene.rupakov@gmail.com>
  * @license  Apache Common License 2.0
  * @link     http://cgw.cryptany.io
@@ -66,7 +65,7 @@ class EthController extends Controller
         );
 
         $webHook = new \BlockCypher\Api\WebHook(); 
-        $webHook->setUrl("http://cgw.cryptany.io/eth/hook/txstat");
+        $webHook->setUrl("https://cgw.cryptany.io/eth/hook/txstat");
         $webHook->setEvent('unconfirmed-tx');
 
         try {

@@ -112,7 +112,9 @@ class EthController extends Controller
         $wallet->userId = $user->id;
 
         try {
-            $addressClient = new \BlockCypher\Client\AddressClient($this->_apiContext);
+            $addressClient = new \BlockCypher\Client\AddressClient(
+                $this->_apiContext
+            );
             $addressKeyChain = $addressClient->generateAddress();
             Log::info('New address generated:' . $addressKeyChain->getAddress());
 

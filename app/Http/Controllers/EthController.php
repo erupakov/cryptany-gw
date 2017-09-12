@@ -63,8 +63,6 @@ class EthController extends Controller
               'log.LogLevel' => 'DEBUG'
             )
         );
-
-        $this->_setupHooks();
     }
 
     /**
@@ -115,10 +113,10 @@ class EthController extends Controller
             $wallet->expirationTime = Carbon::now()->addYear();
             $wallet->save();
         } catch (Exception $ex) {
-            Log::error('Error creating new wallet:'.$ex);
+            Log::error('Error creating new wallet:'.$ex->getData());
             abort(401, 'Something went terribly wrong');
         }
-
+        $this->_setupHooks($wallet->address);
         return json_encode(['address'=> $wallet->address]);
     }
 
@@ -184,7 +182,7 @@ class EthController extends Controller
             $txevent->report = $request->getContent();
             $txevent->save();
         } catch (Exception $ex) {
-            Log::error('Error parsing webhook data' . $ex->message());
+            Log::error('Error parsing webhook data' . $ex->getData());
         }
     }
 
@@ -250,7 +248,7 @@ class EthController extends Controller
             return $user;
         } catch(Exception $ex) {
             Log::error(
-                'Error during checking auth header:' . $ex->Message()
+                'Error during checking auth header:' . $ex->getData()
             );
             return false;
         }
@@ -280,7 +278,10 @@ class EthController extends Controller
         catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
             // This will print the detailed information on the exception. 
             //REALLY HELPFUL FOR DEBUGGING
-            Log::error("Error creating ETH unconfirmed-tx webHook: " . $ex->getData());
+            Log::error(
+                "Error creating ETH unconfirmed-tx webHook: " .
+                 $ex->getData()
+            );
         }
 
         $webHook = new \BlockCypher\Api\WebHook(); 

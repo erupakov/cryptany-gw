@@ -44,6 +44,7 @@ class CreateWalletsTable extends Migration
                 $table->integer('userId')->unsigned();
                 $table->integer('apiUserId')->unsigned();            
                 $table->integer('type')->unsigned()->default(1);
+                $table->string('hash')->nullable(true);
                 $table->timestamps();
                 $table->foreign('userId')->references('id')
                     ->on('users')->onDelete('cascade');

@@ -23,6 +23,7 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 
 $factory->define(App\APIUser::class, function (Faker\Generator $faker) {
     return [
+		'username' => 'android',
         'appToken' => str_random(10),
 		'expiryDate' => '2018-10-01',
 		'description' => 'test apiuser'

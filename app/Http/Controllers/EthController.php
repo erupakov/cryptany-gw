@@ -184,6 +184,9 @@ class EthController extends Controller
         } catch (Exception $ex) {
             Log::error('Error parsing webhook data' . $ex->getData());
         }
+
+		// Fire event
+		Event::fire(new TransactionStatusEvent($transaction));
     }
 
     /**

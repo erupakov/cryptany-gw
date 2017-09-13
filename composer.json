@@ -11,7 +11,8 @@
 		"predis/predis": "~1.0",
         "blockcypher/php-client": "*",
         "illuminate/redis": ">=5.4",
-        "squizlabs/php_codesniffer": "^3.0"
+        "squizlabs/php_codesniffer": "^3.0",
+        "pusher/pusher-php-server": "^3.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
 		// Create 12 test API users
         factory(App\APIUser::class, 12)
         	->create();
+
 		// Create currencies
 		$this->create_currency( 'USD', 'USA Dollar' );
 		$this->create_currency( 'BTC', 'Bitcoin' );

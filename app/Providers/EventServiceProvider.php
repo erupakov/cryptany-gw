@@ -13,7 +13,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'App\Events\TransactionStatus' => [
-            'App\Listeners\EventListener',
+            'App\Listeners\TransactionListener',
         ],
     ];
 }

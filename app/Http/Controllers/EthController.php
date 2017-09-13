@@ -50,9 +50,9 @@ class EthController extends Controller
     public function __construct()
     {
         $this->_apiContext = new \BlockCypher\Rest\ApiContext(
-            new \BlockCypher\Auth\SimpleTokenCredential(BITCHAIN_TOKEN), 
-            'main', 
-            'eth' 
+            new \BlockCypher\Auth\SimpleTokenCredential(self::BITCHAIN_TOKEN),
+            'main',
+            'eth'
         );
 
         $this->_apiContext->setConfig(
@@ -90,10 +90,10 @@ class EthController extends Controller
         }
 
         // Find customer by his email
-        $user = App\User::firstOrCreate(['email' => $request->input('email')]);
+        $user = \App\User::firstOrCreate(['email' => $request->input('email')]);
         $user->save(); // in case the user is just created
 
-        $wallet = new App\Wallet;
+        $wallet = new \App\Wallet;
         $wallet->apiUserId = $apiuser->id;
         $wallet->userId = $user->id;
 
@@ -153,11 +153,11 @@ class EthController extends Controller
         // check wallet and transaction id
         try {
             $tx = json_decode($request, true);
-            $wallet = App\Wallet::where(['address'=>$tx['addresses'][0]]);
+            $wallet = \App\Wallet::where(['address'=>$tx['addresses'][0]])->first();
             $srcAddress= $tx['addresses'][1];
 
             if (!isset($wallet)) {
-                $wallet = App\Wallet::where(['address'=>$tx['addresses'][1]]);
+                $wallet = \App\Wallet::where(['address'=>$tx['addresses'][1]])->first();
                 $srcAddress= $tx['addresses'][0];
             }
             if (!isset($wallet)) {
@@ -166,17 +166,17 @@ class EthController extends Controller
             }
 
             // get transaction
-            $transaction = App\Transaction::firstOrCreate(['txHash'=>$tx['hash']]);
+            $transaction = \App\Transaction::firstOrCreate(['txHash'=>$tx['hash']]);
             $transaction->walletId = $wallet->id;
             $transaction->srcAmount = $tx['total'];
             $transaction->dstAmount = 1; // 1 USD
             $transaction->gasAmount = $tx['fee'];
-            $transaction->srcCurrencyId = 3; // ETH
-            $transaction->dstCurrencyId = 0; // USD
+            $transaction->srcCurrencyId = 4; // ETH
+            $transaction->dstCurrencyId = 1; // USD
             $transaction->status = 2; // confirmed
             $transaction->save();
             // save event
-            $txevent = new App\TxEvent();
+            $txevent = new \App\TxEvent();
             $txevent->tx_id = $transaction->id;
             $txevent->eventTime = Carbon::now();
             $txevent->report = $request->getContent();
@@ -206,7 +206,7 @@ class EthController extends Controller
             abort(404, 'wallet parameter is mandatory for this method');
         }
         
-        $wallet = App\Wallet::where(['address'=>$request->input('wallet')]);
+        $wallet = \App\Wallet::where(['address'=>$request->input('wallet')]);
         if (!isset($wallet)) {
             Log::error('Specified wallet address does not exist');
             abort(404, 'Wallet address not found');            
@@ -228,7 +228,7 @@ class EthController extends Controller
      *
      * @return mixed instance of the user of FALSE if something went wrong
      */
-    private function _checkUserExists($authHeader)
+    private function _checkAPIUserExists($authHeader)
     {
         if (strstr($authHeader, 'Basic')!=0) {
             Log::error(
@@ -242,12 +242,12 @@ class EthController extends Controller
             $authParts = explode(' ', $authHeader);
             $testStr = base64_decode($authParts[1]);
             $credendials = explode(':', $testStr);
-            $user = App\APIUser::where(
+            $user = \App\APIUser::where(
                 [
                     'username'=>$credendials[0], 
                     'appToken'=>$credendials[1]
                 ]
-            );
+            )->first();
             return $user;
         } catch(Exception $ex) {
             Log::error(

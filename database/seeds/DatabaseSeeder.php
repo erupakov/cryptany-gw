@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use App\Currency;
+use App\APIUser;
+use \Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,6 +14,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+		// Create test API user for mobile
+		$apiu = new APIUser;
+		$apiu->appToken = 'n45qDLLOi8';
+		$apiu->username = 'android';
+		$apiu->description = 'test mobile api user';
+		$apiu->expiryDate = Carbon::now()->addYear();
+		$apiu->isActive = true;
+		$apiu->useTestChain = true;
+		$apiu->save();
+
+		// Create test API user for chat
+		$apiu = new APIUser;
+		$apiu->appToken = 'RyQJis90Cp';
+		$apiu->username = 'magento-chat';
+		$apiu->description = 'test chat api user';
+		$apiu->expiryDate = Carbon::now()->addYear();
+		$apiu->isActive = true;
+		$apiu->useTestChain = true;
+		$apiu->save();
+
 		// Create 20 test users
         factory(App\User::class, 20)
         	->create();

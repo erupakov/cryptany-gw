@@ -38,7 +38,7 @@ class CreateWalletsTable extends Migration
                 $table->string('privateKey');
                 $table->string('publicKey');
                 $table->string('address')->index();
-                $table->string('wif');
+                $table->string('wif')->nullable(true);
                 $table->boolean('isActive')->index();
                 $table->date('expirationTime')->index();
                 $table->integer('userId')->unsigned();

@@ -35,8 +35,8 @@ class CreateUsersTable extends Migration
             'users', 
             function (Blueprint $table) {
                 $table->increments('id')->unsigned();
-                $table->string('first_name')->default('Noname');
-                $table->string('family_name')->default('Acme');
+                $table->string('first_name')->default('Noname')->nullable(true);
+                $table->string('family_name')->default('Acme')->nullable(true);
                 $table->string('email')->index();
                 $table->string('password')->default('Qwerty123')->nullable(true);
                 $table->string('pin')->default('1111')->index();

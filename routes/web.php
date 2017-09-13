@@ -33,6 +33,7 @@ $router->get('/txs/checkAddress', 'EthController@getTxStatusByAddress');
 $router->post('/txs/all', 'TxController@getAll');
 $router->post('/txs/one', 'TxController@getTransaction');
 $router->post('/txs/new', 'TxController@createNewTransaction');
+$router->get('/txs/test/{hash}', 'TxController@testBroadcast');
 $router->post('/eth/hook/txstat', 'EthController@getTxStatusHook');
 $router->post('/user/signin', 'UserController@processSignIn');
 $router->post('/user/verifycode', 'UserController@processVerifyCode');

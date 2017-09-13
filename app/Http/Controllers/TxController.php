@@ -124,4 +124,21 @@ class TxController extends Controller
         Log::info('Got hook request: unconfirmed');
         Log::debug($request);
     }
+
+
+    /**
+     * Method fires an event for the selected wallet, used to test broadcasting
+     *
+     * @param \Illuminate\Http\Request $request Request to process
+	 * @param string $id Wallet hash to test against
+     *
+     * @method getAll
+     *
+     * @return nothing
+     */
+    public function testBroadcast(Request $request, $hash)
+    {
+        event(new TransactionStatusEvent());
+    }
+
 }

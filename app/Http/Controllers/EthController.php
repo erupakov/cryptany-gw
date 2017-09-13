@@ -82,7 +82,7 @@ class EthController extends Controller
             abort(404, 'email parameter is mandatory for this method');
         }
 
-        $apiuser = $this->_checkAPIUserExists($request->header('Authentication'));
+        $apiuser = $this->_checkAPIUserExists($request->header('Authorization'));
 
         if ($apiuser===false || !isset($apiuser)) {
             Log::error('Wrong or empty appToken presented');

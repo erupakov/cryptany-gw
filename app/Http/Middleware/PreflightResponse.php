@@ -12,6 +12,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use \Log;
 
 /**
  * Preflight response handler middleware -- responses to preflight browser 
@@ -35,7 +36,7 @@ class PreflightResponse
      * @return mixed
      */
     public function handle($request, Closure $next)
-    {        
+    {
         $http_origin = isset($_SERVER['HTTP_ORIGIN']) ? 
             $_SERVER['HTTP_ORIGIN'] : false;
 
@@ -44,7 +45,9 @@ class PreflightResponse
             'https://www.forsta.com'
         ];
 
-        if (in_array($http_origin, $allowed_origins)) {
+		Log::info('Got preflight request:'.$request);
+
+//        if (in_array($http_origin, $allowed_origins)) {
             return $next($request)->header('Access-Control-Allow-Origin', '*')
                 ->header(
                     'Access-Control-Allow-Methods', 
@@ -54,8 +57,8 @@ class PreflightResponse
                     'Access-Control-Allow-Headers', 
                     'Content-Type, Accept, Authorization, X-Requested-With'
                 );
-        }
+//        }
 
-        return $next($request);
+//        return $next($request);
     }
 }

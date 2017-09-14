@@ -14,6 +14,15 @@ class Transaction extends Model
     protected $table = 'transactions';
     //
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'txHash'
+    ];
+
     public function wallet()
     {
         return $this->belongsTo('App\Wallet');

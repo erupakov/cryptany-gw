@@ -37,12 +37,12 @@ class CreateTransactionsTable extends Migration
             function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('txHash')->unique(true);
-                $table->float('srcAmount')->nullable(false);
-                $table->float('dstAmount')->nullable(false);
-                $table->float('gasAmount')->nullable(false);
-                $table->integer('srcCurrencyId')->unsigned();
-                $table->integer('dstCurrencyId')->unsigned();
-                $table->integer('walletId')->unsigned();
+                $table->float('srcAmount')->nullable(false)->default(0);
+                $table->float('dstAmount')->nullable(false)->default(0);
+                $table->float('gasAmount')->nullable(false)->default(0);
+                $table->integer('srcCurrencyId')->unsigned()->default(4);
+                $table->integer('dstCurrencyId')->unsigned()->default(1);
+                $table->integer('walletId')->unsigned()->nullable(true);
                 $table->integer('sessionId')->unsigned()->nullable(true);
                 $table->integer('status')->unsigned()->default(0);
                 $table->timestamps();

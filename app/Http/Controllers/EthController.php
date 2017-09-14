@@ -14,7 +14,10 @@ namespace App\Http\Controllers;
 use \App\User;
 use \Illuminate\Http\Request;
 use \Log;
+use \Event;
 use Carbon\Carbon;
+use \App\Events\TransactionStatusEvent;
+
 /**
  * Ethereum blockchain actions controller, used to perform actions for Ethereum 
  * blockchain
@@ -133,11 +136,11 @@ class EthController extends Controller
       *
       * @return nothing
       */
-    public function getTxStatus($request, $hash)
+    public function getTxStatus(Request $request, $hash)
     {
         $txClient = new \BlockCypher\Client\TXClient($this->_apiContext);
         $tx = $txClient->get($hash);
-        return json_encode(['confirmed'=>$tx->confirmed]);
+        return $tx;
     }
 
     /**
@@ -155,7 +158,7 @@ class EthController extends Controller
         Log::debug($request);
         // check wallet and transaction id
         try {
-            $tx = json_decode($request, true);
+            $tx = json_decode($request->getContent(), true);
             $wallet = \App\Wallet::where(['address'=>$tx['addresses'][0]])->first();
             $srcAddress= $tx['addresses'][1];
 
@@ -173,7 +176,7 @@ class EthController extends Controller
             $transaction->walletId = $wallet->id;
             $transaction->srcAmount = $tx['total'];
             $transaction->dstAmount = 1; // 1 USD
-            $transaction->gasAmount = $tx['fee'];
+            $transaction->gasAmount = $tx['gas_used'];
             $transaction->srcCurrencyId = 4; // ETH
             $transaction->dstCurrencyId = 1; // USD
             $transaction->status = 2; // confirmed

@@ -197,8 +197,13 @@ class EthController extends Controller
             Log::error('Error parsing webhook data' . $ex->getData());
         }
 
-        // Fire event
-        Event::fire(new TransactionStatusEvent($transaction));
+		if ($request->headers('X-Eventtype')=='confirmed-tx') {
+	        Event::fire(new TransactionStatusConfirmedEvent($transaction));
+		} elseif($request->headers('X-Eventtype')=='unconfirmed-tx') {
+	        Event::fire(new TransactionStatusUnconfirmedEvent($transaction));
+		} else {
+			Log::warning('Got unknown event!');
+		}
     }
 
     /**

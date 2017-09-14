@@ -91,8 +91,8 @@ class EthController extends Controller
 
         // Find customer by his email
         $user = \App\User::firstOrCreate(['email' => $request->input('email')]);
-		$user->first_name = $request->input('first_name');
-		$user->family_name = $request->input('family_name');
+        $user->first_name = $request->input('first_name');
+        $user->family_name = $request->input('family_name');
         $user->save(); // in case the user is just created
 
         $wallet = new \App\Wallet;
@@ -120,7 +120,12 @@ class EthController extends Controller
             abort(401, 'Something went terribly wrong');
         }
         $this->_setupHooks($wallet->address);
-        return json_encode(['address'=> $wallet->address, 'walletHash'=>$wallet->hash]);
+        return json_encode(
+            [
+                'address'=> $wallet->address, 
+                'walletHash'=>$wallet->hash
+            ]
+        );
     }
 
      /**
@@ -160,7 +165,8 @@ class EthController extends Controller
             $srcAddress= $tx['addresses'][1];
 
             if (!isset($wallet)) {
-                $wallet = \App\Wallet::where(['address'=>$tx['addresses'][1]])->first();
+                $wallet = \App\Wallet::where(['address'=>$tx['addresses'][1]])
+                    ->first();
                 $srcAddress= $tx['addresses'][0];
             }
             if (!isset($wallet)) {
@@ -188,8 +194,8 @@ class EthController extends Controller
             Log::error('Error parsing webhook data' . $ex->getData());
         }
 
-		// Fire event
-		Event::fire(new TransactionStatusEvent($transaction));
+        // Fire event
+        Event::fire(new TransactionStatusEvent($transaction));
     }
 
     /**
@@ -209,7 +215,8 @@ class EthController extends Controller
             abort(404, 'wallet parameter is mandatory for this method');
         }
         
-        $wallet = \App\Wallet::where(['address'=>$request->input('wallet')])->first();
+        $wallet = \App\Wallet::where(['address'=>$request->input('wallet')])
+            ->first();
         if (!isset($wallet)) {
             Log::error('Specified wallet address does not exist');
             abort(404, 'Wallet address not found');            

@@ -1,9 +1,9 @@
-﻿{
+{
     "block_hash": "b35265965f6f14c5d692b2030922fce53067fc0e9d8c8490c31d4ecd3e46500c",
     "block_height": 1564040,
     "block_index": 0,
     "hash": "8f39fb4940c084460da00a876a521ef2ba84ad6ea8d2f5628c9f1f8aeb395342",
-    "addresses": ["4e9d8b4f18d984f6f0c88d07e4b39201e825cd17", "738d145faabb1e00cf5a017588a9c0f998318012"],
+    "addresses": ["7c016776a3c3e1dffdfb27d903ee8b412bc8d228", "738d145faabb1e00cf5a017588a9c0f998318012"],
     "total": 1.0153153359437e+16,
     "fees": 1.59558e+15,
     "size": 116,

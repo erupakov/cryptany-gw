@@ -209,13 +209,13 @@ class EthController extends Controller
             abort(404, 'wallet parameter is mandatory for this method');
         }
         
-        $wallet = \App\Wallet::where(['address'=>$request->input('wallet')]);
+        $wallet = \App\Wallet::where(['address'=>$request->input('wallet')])->first();
         if (!isset($wallet)) {
             Log::error('Specified wallet address does not exist');
             abort(404, 'Wallet address not found');            
         }
         // Or else, check transactions
-        if ($wallet->transactions()->count()>0) {
+        if ($wallet->transactions()->count() > 0) {
             // there is transaction, for now it is enough to check only
             // transaction existance
             return json_encode(['status'=>'confirmed']);

@@ -138,7 +138,10 @@ class TxController extends Controller
      */
     public function testBroadcast(Request $request, $hash)
     {
-        event(new TransactionStatusEvent());
+		$wallet = \App\Wallet::where(['hash'=>$hash])->first();
+		$transaction = $wallet->transactions()->first();
+
+		Event::fire(new TransactionStatusEvent($transaction));
     }
 
 }

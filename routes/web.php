@@ -19,6 +19,11 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
+use App\Transaction;
+use App\Wallet;
+use App\User;
+use App\Mail\TransactionCreated;
+use Illuminate\Support\Facades\Mail;
 
 $router->get(
     '/', 
@@ -46,3 +51,14 @@ $router->get('/data/addr', 'EthController@getTransientAddress');
 
 // TODO: EthController is temporary, should do it in DataController
 $router->post('/data/addr', 'EthController@getTransientAddress');
+
+$router->get(
+    '/testmail', function () {
+        $tx = App\Transaction::findOrFail(2);
+        $user = $tx->wallet->user;
+
+        Mail::to($user->email)
+            ->from(['address'=>'support@cryptany.io', 'name'=>'Cryptany notification'])
+            ->queue(new TransactionCreated($tx));
+    }
+)

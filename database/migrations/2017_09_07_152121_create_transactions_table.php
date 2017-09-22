@@ -44,6 +44,7 @@ class CreateTransactionsTable extends Migration
                 $table->integer('dstCurrencyId')->unsigned()->default(1);
                 $table->integer('walletId')->unsigned()->nullable(true);
                 $table->integer('sessionId')->unsigned()->nullable(true);
+                $table->string('card')->nullable(true);
                 $table->integer('status')->unsigned()->default(0);
                 $table->timestamps();
                 $table->foreign('walletId')->references('id')

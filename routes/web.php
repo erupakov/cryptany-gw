@@ -23,7 +23,7 @@
 $router->get(
     '/', 
     function () use ($router) {
-        return $router->app->version();
+        return 'Cryptany.io API v1 root';
     }
 );
 

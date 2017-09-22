@@ -12,8 +12,13 @@
 namespace App\Listeners;
 
 use App\Events\TransactionStatusEvent;
+use App\User;
+use App\Transaction;
+use App\Wallet;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Mail\TransactionCreated;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Transaction event listener
@@ -46,5 +51,11 @@ class TransactionListener implements ShouldQueue
     public function handle(TransactionCreatedEvent $event)
     {
         // send mail about successful transaction creation
+        $tx = $event->transaction;
+        $user = $tx->wallet->user;
+
+        Mail::to($user->email)
+        ->from(['address'=>'support@cryptany.io', 'name'=>'Cryptany notification'])
+        ->queue(new TransactionCreated($tx));
     }
 }

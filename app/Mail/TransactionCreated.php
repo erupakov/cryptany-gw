@@ -11,6 +11,9 @@
  */
 namespace App\Mail;
 
+use App\Transaction;
+use App\Wallet;
+use App\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -28,14 +31,16 @@ class TransactionCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
+    private $_transaction;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct( $tx )
     {
-        //
+        $this->_transaction = $tx;
     }
 
     /**
@@ -45,6 +50,17 @@ class TransactionCreated extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.tx_created');
+        return $this->view('emails.tx_created')
+            ->with(
+                [
+                    'txId'=>$this->_transaction->wallet->hash,
+                    'srcAmount'=>$this->_transaction->srcAmount,
+                    'dstAmount'=>$this->_transaction->dstAmount,
+                    'address'=>$this->_transaction->wallet->address,
+                    'first_name'=>$this->_transaction->wallet->user->first_name,
+                    'family_name'=>$this->_transaction->wallet->user->family_name,
+                    'txDate'=>$this->_transaction->created_at,
+                ]
+            );
     }
 }

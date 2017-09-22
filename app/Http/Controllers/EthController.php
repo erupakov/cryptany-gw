@@ -116,12 +116,25 @@ class EthController extends Controller
             $wallet->wif = $addressKeyChain->getWif();
             $wallet->isActive = true;
             $wallet->expirationTime = Carbon::now()->addYear();
-            $wallet->hash = str_random(6);
+            $wallet->hash = str_random(8);
             $wallet->save();
         } catch (Exception $ex) {
             Log::error('Error creating new wallet:'.$ex->getData());
             abort(401, 'Something went terribly wrong');
         }
+
+        $transaction = new \App\Transaction;
+        $transaction->txHash = str_random(8); // generate transaction id
+        $transaction->walletId = $wallet->id;
+        $transaction->srcAmount = $request->input('srcAmount');
+        $transaction->dstAmount = $request->input('dstAmount');
+        $transaction->gasAmount = 120000; // 120000 satishis for now
+        $transaction->srcCurrencyId = 4; // ETH
+        $transaction->dstCurrencyId = 1; // USD
+        $transaction->status = TransactionStatus::CREATED; // created 
+        $transaction->save();
+        Event::fire(new TransactionCreatedEvent($transaction));
+
         $this->_setupHooks($wallet->address);
         return json_encode(
             [
@@ -178,14 +191,19 @@ class EthController extends Controller
             }
 
             // get transaction
-            $transaction = \App\Transaction::firstOrCreate(['txHash'=>$tx['hash']]);
-            $transaction->walletId = $wallet->id;
-            $transaction->srcAmount = $tx['total'];
-            $transaction->dstAmount = 1; // 1 USD
-            $transaction->gasAmount = $tx['gas_used'];
-            $transaction->srcCurrencyId = 4; // ETH
-            $transaction->dstCurrencyId = 1; // USD
-            $transaction->status = 2; // confirmed
+            $transaction = $wallet->transactions()->first();
+
+            if ($request->headers('X-Eventtype')=='confirmed-tx') {
+                $transaction->status = TransactionStatus::CONFIRMED; // confirmed
+                
+                Event::fire(new TransactionStatusConfirmedEvent($transaction));
+            } elseif ($request->headers('X-Eventtype')=='unconfirmed-tx') {
+                $transaction->status = TransactionStatus::UNCONFIRMED; // unconfirmed
+                
+                Event::fire(new TransactionStatusUnconfirmedEvent($transaction));
+            } else {
+                Log::warning('Got unknown event!');
+            }
             $transaction->save();
             // save event
             $txevent = new \App\TxEvent();
@@ -196,14 +214,6 @@ class EthController extends Controller
         } catch (Exception $ex) {
             Log::error('Error parsing webhook data' . $ex->getData());
         }
-
-		if ($request->headers('X-Eventtype')=='confirmed-tx') {
-	        Event::fire(new TransactionStatusConfirmedEvent($transaction));
-		} elseif($request->headers('X-Eventtype')=='unconfirmed-tx') {
-	        Event::fire(new TransactionStatusUnconfirmedEvent($transaction));
-		} else {
-			Log::warning('Got unknown event!');
-		}
     }
 
     /**

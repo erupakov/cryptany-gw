@@ -1,6 +1,6 @@
 <?php
 /**
- * Transaction confirmed event
+ * Transaction created event, used to inform user about new transaction creation
  * PHP Version 7
  *
  * @category Event
@@ -13,7 +13,6 @@ namespace App\Events;
 
 use App\Transaction;
 use App\Events\Event;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -25,7 +24,7 @@ use Illuminate\Support\Facades\Mail;
  * @license  Apache Common License 2.0
  * @link     http://cgw.cryptany.io
  */
-class TransactionStatusConfirmedEvent extends Event implements ShouldBroadcast
+class TransactionCreatedEvent extends Event
 {
     /**
      * Property to hold event data
@@ -52,15 +51,5 @@ class TransactionStatusConfirmedEvent extends Event implements ShouldBroadcast
     {
         $this->transaction = $t;
         $_walletHash = $t->wallet->hash;
-    }
-
-    /**
-     * Get the channels the event should be broadcast on.
-     *
-     * @return array
-     */
-    public function broadcastOn()
-    {
-        return ['transactions'.$this->_walletHash];
     }
 }

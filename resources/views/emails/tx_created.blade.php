@@ -12,7 +12,7 @@
 <div style="margin: auto; width: 920px; background-color: #fff;"><!-- Main container -->
 <h3>Your transaction was successfully created</h3>
 <p>Hi {{ $first_name }} {{ $family_name }}! This is <a href="https://cryptany.io/" >Cryptany</a> notification system. We want to inform you that your 
-Ethereum to USD transfer transaction was successfully created and is currently waiting for confirmation.</p>
+Ethereum to USD funds transfer transaction was successfully created and is currently waiting for your payment and confirmation.</p>
 <p>Please, find more details about transaction below:</p>
 <ul>
 <li>Transaction ID: {{ $txId }}</li>

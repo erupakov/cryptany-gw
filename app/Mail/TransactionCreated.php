@@ -50,7 +50,9 @@ class TransactionCreated extends Mailable
      */
     public function build()
     {
+		$w = $this->_transaction->wallet;
         return $this->view('emails.tx_created')
+            ->from(['address'=>'support@cryptany.io', 'name'=>'Cryptany notification'])
             ->with(
                 [
                     'txId'=>$this->_transaction->wallet->hash,

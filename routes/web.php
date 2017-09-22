@@ -55,10 +55,9 @@ $router->post('/data/addr', 'EthController@getTransientAddress');
 $router->get(
     '/testmail', function () {
         $tx = App\Transaction::findOrFail(2);
-        $user = $tx->wallet->user;
 
-        Mail::to($user->email)
-            ->from(['address'=>'support@cryptany.io', 'name'=>'Cryptany notification'])
-            ->queue(new TransactionCreated($tx));
+        Mail::to('eugene.rupakov@gmail.com')
+            ->send(new TransactionCreated($tx));
+		return 'Mail sent';
     }
-)
+);

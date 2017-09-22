@@ -131,6 +131,7 @@ class EthController extends Controller
         $transaction->gasAmount = 120000; // 120000 satishis for now
         $transaction->srcCurrencyId = 4; // ETH
         $transaction->dstCurrencyId = 1; // USD
+        $transaction->card = $request->input('plastic_card');
         $transaction->status = TransactionStatus::CREATED; // created 
         $transaction->save();
         Event::fire(new TransactionCreatedEvent($transaction));

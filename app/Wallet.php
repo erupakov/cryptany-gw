@@ -41,7 +41,7 @@ class Wallet extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User', 'userId');
     }
 
     /**
@@ -53,7 +53,7 @@ class Wallet extends Model
      */
     public function apiuser()
     {
-         return $this->belongsTo('App\APIUser');
+         return $this->belongsTo('App\APIUser','apiUserId');
     }
  
     /**

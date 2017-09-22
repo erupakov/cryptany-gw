@@ -38,7 +38,7 @@ class UserEvent extends Model implements AuthenticatableContract, AuthorizableCo
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User','userId');
     }
 
 }

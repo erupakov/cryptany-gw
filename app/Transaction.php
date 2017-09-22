@@ -17,10 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * Transaction status enumeration
  *
  */
-class TransactionStatus extends SplEnum
-{
-    const __default = self::CREATED;
-    
+abstract class TransactionStatus
+{  
     const CREATED = 1;
     const UNCOMFIRMED = 2;
     const CONFIRMED = 3;
@@ -69,7 +67,7 @@ class Transaction extends Model
      */
     public function wallet()
     {
-        return $this->belongsTo('App\Wallet');
+        return $this->belongsTo('App\Wallet', 'walletId');
     }
 
     /**

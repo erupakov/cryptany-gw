@@ -52,7 +52,7 @@ class TransactionListener implements ShouldQueue
     {
         // send mail about successful transaction creation
         $tx = $event->transaction;
-        $user = $tx->wallet->user;
+        $user = $tx->wallet()->user();
 
         Mail::to($user->email)
         ->from(['address'=>'support@cryptany.io', 'name'=>'Cryptany notification'])

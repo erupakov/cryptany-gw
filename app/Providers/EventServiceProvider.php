@@ -31,7 +31,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'App\Events\TransactionCreatedEvent' => [
-            'App\Listeners\TransactionListener@onCreated',
+            'App\Listeners\TransactionListener',
         ]
     ];
 }

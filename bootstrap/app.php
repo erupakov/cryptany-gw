@@ -28,7 +28,7 @@ $app->withFacades();
 $app->withEloquent();
 
 $app->configure('cors');
-
+$app->configure('mail');
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings

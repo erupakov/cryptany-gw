@@ -40,6 +40,6 @@ class CurrencyRate extends Model
      */
     public function currency()
     {
-        return $this->belongsTo('App\Currency');
+        return $this->belongsTo('App\Currency','currencyId');
     }
 }

@@ -32,6 +32,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         'App\Events\TransactionCreatedEvent' => [
             'App\Listeners\TransactionListener',
-        ]
+        ],
+        'App\Events\TransactionStatusConfirmedEvent' => [
+            'App\Listeners\TransactionListener@onConfirmed',
+        ]        
     ];
 }

@@ -11,13 +11,13 @@
 </div>
 <div style="margin: auto; width: 920px; background-color: #fff;"><!-- Main container -->
 <h3>Your transaction was confirmed by the blockchain</h3>
-<p>Hi {{ $first_name }} {{ $family_name }}! This is <a href="https://cryptany.io/" >Cryptany</a> notification system. We want to inform you that your 
+<p>Hi {{ $first_name }} {{ $family_name }}! This is <strong>Cryptany</strong> notification system. We want to inform you that your 
 Ethereum to USD funds transfer transaction was confirmed by blockchain and is we currently processing it. You will get your funds on your bank account soon.</p>
 <p>Please find more details about transaction below:</p>
 <ul>
 <li>Transaction ID: {{ $txId }}</li>
 <li>Wallet address: {{ $address }}</li>
-<li>Transaction sum: {{ $srcAmount }} ETH => ${{ $dstAmount }} US</li>
+<li>Transaction sum: {{ $srcAmount }} ETH => {{ $dstAmount }} USD</li>
 <li>Transaction date: {{ $txDate }}</li>
 <li>QR code: <img src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl={{ $address }}&choe=UTF-8" alt="address qr code"></li>
 </ul>

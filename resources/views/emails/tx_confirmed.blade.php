@@ -11,7 +11,7 @@
 </div>
 <div style="margin: auto; width: 920px; background-color: #fff;"><!-- Main container -->
 <h3>Your transaction was confirmed by the blockchain</h3>
-<p>Hi {{ $first_name }} {{ $family_name }}! This is <strong>Cryptany</strong> notification system. We want to inform you that your 
+<p>Hi! This is <strong>Cryptany</strong> notification system. We want to inform you that your 
 Ethereum to USD funds transfer transaction was confirmed by blockchain and is we currently processing it. You will get your funds on your bank account soon.</p>
 <p>Please find more details about transaction below:</p>
 <ul>

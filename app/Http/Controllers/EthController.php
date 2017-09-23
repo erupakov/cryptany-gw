@@ -94,8 +94,8 @@ class EthController extends Controller
 
         // Find customer by his email
         $user = \App\User::firstOrCreate(['email' => $request->input('email')]);
-        $user->first_name = $request->input('first_name');
-        $user->family_name = $request->input('family_name');
+        $user->first_name = 'None';
+        $user->family_name = 'None';
         $user->save(); // in case the user is just created
 
         $wallet = new \App\Wallet;
@@ -254,7 +254,7 @@ class EthController extends Controller
 				'walletHash'=>$wallet->hash,
 				'status'=>$tx->status,
 				'statusDate'=>$tx->updated_at,
-				'card'=>$wallet->card
+				'card'=>$tx->card
 			]
 		);
     }

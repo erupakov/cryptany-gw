@@ -126,15 +126,15 @@ class EthController extends Controller
         $transaction = new \App\Transaction;
         $transaction->txHash = str_random(8); // generate transaction id
         $transaction->walletId = $wallet->id;
-        $transaction->srcAmount = $request->input('srcAmount');
-        $transaction->dstAmount = $request->input('dstAmount');
-        $transaction->gasAmount = 120000; // 120000 satishis for now
+        $transaction->srcAmount = str_replace(',','.',$request->input('srcAmount'));
+        $transaction->dstAmount = str_replace(',','.',$request->input('dstAmount'));
+        $transaction->gasAmount = 120000; // 120000 satoshis for now
         $transaction->srcCurrencyId = 4; // ETH
         $transaction->dstCurrencyId = 1; // USD
         $transaction->card = $request->input('plastic_card');
-        $transaction->status = TransactionStatus::CREATED; // created 
+        $transaction->status = \App\TransactionStatus::CREATED; // created 
         $transaction->save();
-        Event::fire(new TransactionCreatedEvent($transaction));
+        Event::fire(new \App\Events\TransactionCreatedEvent($transaction));
 
         $this->_setupHooks($wallet->address);
         return json_encode(
@@ -242,10 +242,21 @@ class EthController extends Controller
         }
         // Or else, check transactions
         $tx = $wallet->transactions()->first();
-        if (!isset($wallet)) {
+        if (!isset($tx)) {
             Log::error('No transactions registered under this wallet');
             abort(404, 'No transaction registered');
-        }        
+        }
+		return json_encode( 
+			[
+				'srcAmount'=>$tx->srcAmount,
+				'dstAmount'=>$tx->dstAmount,
+				'address'=>$wallet->address,
+				'walletHash'=>$wallet->hash,
+				'status'=>$tx->status,
+				'statusDate'=>$tx->updated_at,
+				'card'=>$wallet->card
+			]
+		);
     }
 
     /**

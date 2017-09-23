@@ -44,11 +44,11 @@ class TransactionListener implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param TransactionCreatedEvent $event Event to handle
+     * @param \App\Events\TransactionCreatedEvent $event Event to handle
      *
      * @return void
      */
-    public function handle(TransactionCreatedEvent $event)
+    public function handle(\App\Events\TransactionCreatedEvent $event)
     {
         // send mail about successful transaction creation
         $tx = $event->transaction;

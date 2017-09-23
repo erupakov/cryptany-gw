@@ -1,6 +1,6 @@
 <?php
 /**
- * Ethereum blockchain actions controller
+ * Transaction created mail template
  * PHP Version 7
  *
  * @category Controller
@@ -19,7 +19,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 /**
- * Mail template about success creating transaction
+ * Mail template notification about success creating transaction
  *
  * @category Mail
  * @package  App\Mail

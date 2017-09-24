@@ -116,7 +116,7 @@ class EthController extends Controller
             $wallet->wif = $addressKeyChain->getWif();
             $wallet->isActive = true;
             $wallet->expirationTime = Carbon::now()->addYear();
-            $wallet->hash = str_random(8);
+            $wallet->hash = strtoupper(str_random(8));
             $wallet->save();
         } catch (Exception $ex) {
             Log::error('Error creating new wallet:'.$ex->getData());

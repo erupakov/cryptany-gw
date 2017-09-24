@@ -116,7 +116,7 @@ class EthController extends Controller
             $wallet->wif = $addressKeyChain->getWif();
             $wallet->isActive = true;
             $wallet->expirationTime = Carbon::now()->addYear();
-            $wallet->hash = str_random(8);
+            $wallet->hash = strtoupper(str_random(8));
             $wallet->save();
         } catch (Exception $ex) {
             Log::error('Error creating new wallet:'.$ex->getData());
@@ -124,7 +124,7 @@ class EthController extends Controller
         }
 
         $transaction = new \App\Transaction;
-        $transaction->txHash = str_random(8); // generate transaction id
+        $transaction->txHash = strtoupper(str_random(8)); // generate transaction id
         $transaction->walletId = $wallet->id;
         $transaction->srcAmount = str_replace(',','.',$request->input('srcAmount'));
         $transaction->dstAmount = str_replace(',','.',$request->input('dstAmount'));
@@ -234,7 +234,7 @@ class EthController extends Controller
             abort(404, 'wallet parameter is mandatory for this method');
         }
         
-        $wallet = \App\Wallet::where(['hash'=>$request->input('wallet')])
+        $wallet = \App\Wallet::where(['hash'=>strtoupper($request->input('wallet'))])
             ->first();
         if (!isset($wallet)) {
             Log::error('Specified wallet hash does not exist');

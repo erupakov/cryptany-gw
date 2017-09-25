@@ -39,6 +39,8 @@ $router->get('/txs/all', 'TxController@getAll');
 $router->post('/txs/all', 'TxController@getAll');
 $router->get('/txs/one/{id}', 'TxController@getTransactionWithId');
 $router->post('/txs/one', 'TxController@getTransaction');
+$router->delete('/txs/one', 'TxController@deleteTransaction');
+$router->put('/txs/status', 'TxController@changeTxStatus');
 $router->post('/txs/new', 'TxController@createNewTransaction');
 $router->get('/txs/test/{hash}', 'TxController@testBroadcast');
 $router->post('/eth/hook/txstat', 'EthController@getTxStatusHook');

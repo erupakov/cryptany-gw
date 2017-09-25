@@ -12,6 +12,7 @@
 namespace App\Http\Controllers;
 
 use \App\User;
+use \App\Transaction;
 use \Illuminate\Http\Request;
 use \Log;
 
@@ -71,8 +72,7 @@ class TxController extends Controller
         try {
             $webHook->create($this->_apiContext);
             Log::info("Successfully set unconfirmed-tx hook: " . $webHook);
-        }
-        catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
+        } catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
             // This will print the detailed information on the exception. 
             //REALLY HELPFUL FOR DEBUGGING
             Log::error("Error creating ETH webHook: " . $ex->getData());
@@ -90,25 +90,77 @@ class TxController extends Controller
      */
     public function getAll(Request $request)
     {
-        return '';
+		$transactions = \App\Transaction::all();
+        return response()->json($transaction);
     }
 
     /**
      * Returns details of transaction in question
      *
      * @param \Illuminate\Http\Request $request Request to process
-     * @param string                   $hash    Transaction hash to check
      *
-     * @method getTxStatus
+     * @method getTransaction
      *
-     * @return nothing
+     * @return \App\Transaction
      */
-    public function getTransaction($request, $hash)
+    public function getTransaction($request)
     {
-        $txClient = new \BlockCypher\Client\TXClient($this->_apiContext);
-        $tx = $txClient->get($hash);
-        return json_encode(['confirmed'=>$tx->confirmed]);
+		$transaction = false;
+
+		if (isset($request->input('id'))) {
+			$transaction = \App\Transaction::find($request->input('id'));
+		} else if (isset($request->input('hash'))) {
+			$transaction = \App\Transaction::where(['hash'=>strtoupper($request->input('hash'))]);
+		} else {
+			Log::error('No input parameters given');
+			abort(404, 'No input parameters given');
+		}
+
+		if ($transaction===false) {
+			Log::error('Specified transaction not found');
+			abort(404, 'No matched transactions found');
+		} else {
+			return response()->json($transaction);
+		}
     }
+
+    /**
+     * Changes transaction status
+     *
+     * @param \Illuminate\Http\Request $request Request to process
+     *
+     * @method changeTxStatus
+     *
+     * @return \App\Transaction
+     */
+    public function changeTxStatus($request)
+	{
+		$transaction = false;
+		$status = \App\TransactionStatus::CREATED;
+
+		if (isset($request->input('id'))) {
+			$transaction = \App\Transaction::find($request->input('id'));
+		} else if (isset($request->input('hash'))) {
+			$transaction = \App\Transaction::where(['hash'=>strtoupper($request->input('hash'))]);
+		} else {
+			Log::error('No input parameters given');
+			abort(404, 'No input parameters given');
+		}
+
+		if (isset($request->input('status'))) {
+			$status = $request->input('status');
+		}
+
+		if ($transaction===false) {
+			Log::error('Specified transaction not found');
+			abort(404, 'No matched transactions found');
+		} else {
+			$transaction->status = $status; // In future we can implement status change workflow but for now it's just ok
+			$transaction->save();
+
+			return response()->json($transaction);
+		}
+	}
 
     /**
      * Method creates new transaction with specified parameters

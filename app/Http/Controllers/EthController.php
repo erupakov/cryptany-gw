@@ -132,7 +132,8 @@ class EthController extends Controller
         $transaction->srcCurrencyId = 4; // ETH
         $transaction->dstCurrencyId = 1; // USD
         $transaction->card = $request->input('plastic_card');
-        $transaction->status = \App\TransactionStatus::CREATED; // created 
+        $transaction->valDate = $request->input('validity_date');
+        $transaction->status = \App\TransactionStatus::CREATED; // created
         $transaction->save();
         Event::fire(new \App\Events\TransactionCreatedEvent($transaction));
 

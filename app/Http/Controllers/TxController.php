@@ -50,33 +50,6 @@ class TxController extends Controller
      */
     public function __construct()
     {
-        $this->_apiContext = new \BlockCypher\Rest\ApiContext(
-            new \BlockCypher\Auth\SimpleTokenCredential(BITCHAIN_TOKEN), 
-            'main', 
-            'eth' 
-        );
-
-        $this->_apiContext->setConfig(
-            array(
-              'mode' => 'sandbox',
-              'log.LogEnabled' => true,
-              'log.FileName' => 'BlockCypher.log',
-              'log.LogLevel' => 'DEBUG'
-            )
-        );
-
-        $webHook = new \BlockCypher\Api\WebHook(); 
-        $webHook->setUrl("http://cgw.cryptany.io/eth/hook/txstat");
-        $webHook->setEvent('unconfirmed-tx');
-
-        try {
-            $webHook->create($this->_apiContext);
-            Log::info("Successfully set unconfirmed-tx hook: " . $webHook);
-        } catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
-            // This will print the detailed information on the exception. 
-            //REALLY HELPFUL FOR DEBUGGING
-            Log::error("Error creating ETH webHook: " . $ex->getData());
-        }
     }
 
     /**
@@ -91,7 +64,7 @@ class TxController extends Controller
     public function getAll(Request $request)
     {
 		$transactions = \App\Transaction::all();
-        return response()->json($transaction);
+        return response()->json($transactions);
     }
 
     /**
@@ -107,9 +80,9 @@ class TxController extends Controller
     {
 		$transaction = false;
 
-		if (isset($request->input('id'))) {
+		if ($request->input('id')!==null) {
 			$transaction = \App\Transaction::find($request->input('id'));
-		} else if (isset($request->input('hash'))) {
+		} else if ($request->input('hash')!==null) {
 			$transaction = \App\Transaction::where(['hash'=>strtoupper($request->input('hash'))]);
 		} else {
 			Log::error('No input parameters given');
@@ -138,16 +111,16 @@ class TxController extends Controller
 		$transaction = false;
 		$status = \App\TransactionStatus::CREATED;
 
-		if (isset($request->input('id'))) {
+		if (null!==$request->input('id')) {
 			$transaction = \App\Transaction::find($request->input('id'));
-		} else if (isset($request->input('hash'))) {
+		} else if (null!==$request->input('hash')) {
 			$transaction = \App\Transaction::where(['hash'=>strtoupper($request->input('hash'))]);
 		} else {
 			Log::error('No input parameters given');
 			abort(404, 'No input parameters given');
 		}
 
-		if (isset($request->input('status'))) {
+		if (null!==$request->input('status')) {
 			$status = $request->input('status');
 		}
 

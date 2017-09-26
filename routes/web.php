@@ -61,7 +61,8 @@ $router->get(
         $tx = App\Transaction::findOrFail(2);
 
         Mail::to('eugene.rupakov@gmail.com')
-            ->send(new TransactionCreated($tx));
+			->queue(new TransactionCreated($tx)
+            );
 		return 'Mail sent';
     }
 );

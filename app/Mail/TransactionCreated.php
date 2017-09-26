@@ -51,6 +51,8 @@ class TransactionCreated extends Mailable
     public function build()
     {
 		$w = $this->_transaction->wallet;
+		$t = $this->_transaction->created_at;
+		$t->timezone = new \DateTimeZone('UTC');
         return $this->view('emails.tx_created')
             ->from(['address'=>'support@cryptany.io', 'name'=>'Cryptany notification'])
             ->with(
@@ -61,7 +63,7 @@ class TransactionCreated extends Mailable
                     'address'=>$this->_transaction->wallet->address,
                     'first_name'=>$this->_transaction->wallet->user->first_name,
                     'family_name'=>$this->_transaction->wallet->user->family_name,
-                    'txDate'=>$this->_transaction->created_at,
+                    'txDate'=>$t,
                 ]
             );
     }

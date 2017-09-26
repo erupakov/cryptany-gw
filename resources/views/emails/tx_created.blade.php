@@ -22,6 +22,11 @@ Ethereum to USD funds transfer was successfully created and is currently waiting
 <li>QR code: <img src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl={{ $address }}&choe=UTF-8" alt="address qr code"></li>
 </ul>
 <p>You can track your transfer status by using <a href="https://mobile.cryptany.io/transit/{{ $txId }}">this link</a> via Cryptany.io mobile application</p>
+<p>All transactions are subject to KYC / AML procedures. Card transactions may not be processed in some countries, banks or card systems.
+If you fail on KYC / AML procedures or Cryptany is not able to send fiat currency to your card, you will get full refund in 
+cryptocurrency to your cryptowallet.
+</p>
+
 </div> <!-- Main container -->
 
 </body>

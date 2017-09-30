@@ -17,6 +17,8 @@ use \Log;
 use \Event;
 use Carbon\Carbon;
 use \App\Events\TransactionStatusEvent;
+use \App\Events\TransactionStatusUnconfirmedEvent;
+use \App\Events\TransactionStatusConfirmedEvent;
 
 /**
  * Ethereum blockchain actions controller, used to perform actions for Ethereum 
@@ -195,12 +197,12 @@ class EthController extends Controller
             // get transaction
             $transaction = $wallet->transactions()->first();
 
-            if ($request->headers('X-Eventtype')=='confirmed-tx') {
-                $transaction->status = TransactionStatus::CONFIRMED; // confirmed
+            if ($request->header('X-Eventtype')=='confirmed-tx') {
+                $transaction->status = \App\TransactionStatus::CONFIRMED; // confirmed
                 
                 Event::fire(new TransactionStatusConfirmedEvent($transaction));
-            } elseif ($request->headers('X-Eventtype')=='unconfirmed-tx') {
-                $transaction->status = TransactionStatus::UNCONFIRMED; // unconfirmed
+            } elseif ($request->header('X-Eventtype')=='unconfirmed-tx') {
+                $transaction->status = \App\TransactionStatus::UNCONFIRMED; // unconfirmed
                 
                 Event::fire(new TransactionStatusUnconfirmedEvent($transaction));
             } else {

@@ -12,9 +12,10 @@
 namespace App\Http\Controllers;
 
 use \App\User;
-use \App\Transaction;
 use \Illuminate\Http\Request;
 use \Log;
+use \Event;
+use Carbon\Carbon;
 
 /**
  * Generic blockchain actions controller, used to perform actions for all
@@ -106,15 +107,24 @@ class TxController extends Controller
      *
      * @return \App\Transaction
      */
-    public function changeTxStatus($request)
+    public function changeTxStatus(Request $request)
 	{
 		$transaction = false;
-		$status = \App\TransactionStatus::CREATED;
+		$status = 1;
 
 		if (null!==$request->input('id')) {
 			$transaction = \App\Transaction::find($request->input('id'));
 		} else if (null!==$request->input('hash')) {
-			$transaction = \App\Transaction::where(['hash'=>strtoupper($request->input('hash'))]);
+			$transaction = \App\Transaction::where(['hash'=>strtoupper($request->input('hash'))])->first();
+		}  else if (null!==$request->input('walletHash')) {
+			// Find transaction by searching walletHash
+			$w = \App\Wallet::where(['hash'=>strtoupper($request->input('walletHash'))])->first();
+			if (null!==$w) {
+				$transaction = $w->transactions()->first();
+			} else {
+				Log::error('Wallet was not found with presented walletHash');
+				abort(404, 'Wallet was not found with presented walletHash');
+			}
 		} else {
 			Log::error('No input parameters given');
 			abort(404, 'No input parameters given');
@@ -132,7 +142,7 @@ class TxController extends Controller
 			$transaction->save();
 
 			if ($status==\App\TransactionStatus::PAID) {
-				Event::fire(new TransactionStatusFiatSentEvent($transaction));
+				Event::fire(new \App\Events\TransactionStatusFiatSentEvent($transaction));
 			}
 
 			return response()->json($transaction);

@@ -55,6 +55,7 @@ class TransactionCreated extends Mailable
 		$t->timezone = new \DateTimeZone('UTC');
         return $this->view('emails.tx_created')
             ->from(['address'=>'support@cryptany.io', 'name'=>'Cryptany notification'])
+			->bcc('support@cryptany.io')
             ->with(
                 [
                     'txId'=>$this->_transaction->wallet->hash,

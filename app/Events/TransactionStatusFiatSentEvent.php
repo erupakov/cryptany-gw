@@ -61,6 +61,7 @@ class TransactionStatusFiatSentEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return ['transactions'.$this->_walletHash];
+//        return ['transactions'.$this->_walletHash];
+        return ['transactions.'.$this->transaction->wallet->hash];
     }
 }

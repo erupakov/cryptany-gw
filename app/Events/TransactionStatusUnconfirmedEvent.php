@@ -34,6 +34,7 @@ class TransactionStatusUnconfirmedEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return ['transactions'.$this->walletHash];
+//        return ['transactions'.$this->walletHash];
+        return ['transactions.'.$this->transaction->wallet->hash];
     }
 }

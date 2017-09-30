@@ -127,9 +127,13 @@ class TxController extends Controller
 		if ($transaction===false) {
 			Log::error('Specified transaction not found');
 			abort(404, 'No matched transactions found');
-		} else {
+		} else { // process status change
 			$transaction->status = $status; // In future we can implement status change workflow but for now it's just ok
 			$transaction->save();
+
+			if ($status==\App\TransactionStatus::PAID) {
+				Event::fire(new TransactionStatusFiatSentEvent($transaction));
+			}
 
 			return response()->json($transaction);
 		}

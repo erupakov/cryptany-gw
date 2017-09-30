@@ -256,7 +256,7 @@ class EthController extends Controller
 				'address'=>$wallet->address,
 				'walletHash'=>$wallet->hash,
 				'status'=>$tx->status,
-				'statusDate'=>$tx->updated_at,
+				'statusDate'=>$tx->updated_at->toDateTimeString(),
 				'card'=>$tx->card
 			]
 		);

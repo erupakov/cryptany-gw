@@ -35,6 +35,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         'App\Events\TransactionStatusConfirmedEvent' => [
             'App\Listeners\TransactionListener@onConfirmed',
-        ]        
+        ],
+        'App\Events\TransactionStatusFiatSentEvent' => [
+            'App\Listeners\TransactionListener@onFiatSent',
+        ]
     ];
 }

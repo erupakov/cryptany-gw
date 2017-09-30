@@ -18,6 +18,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Mail\TransactionCreated;
 use App\Mail\TransactionConfirmed;
+use App\Mail\TransactionFiatSent;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -74,5 +75,22 @@ class TransactionListener implements ShouldQueue
          Mail::to($user->email)
          ->send(new TransactionConfirmed($tx));
      }
+
+    /**
+     * Handle the event.
+     *
+     * @param \App\Events\TransactionCreatedEvent $event Event to handle
+     *
+     * @return void
+     */
+     public function onFiatSent(\App\Events\TransactionStatusFiatSentEvent $event)
+     {
+         // send mail about successful transaction creation
+         $tx = $event->transaction;
+         $user = $tx->wallet->user;
  
+         Mail::to($user->email)
+         ->send(new TransactionFiatSent($tx));
+     }
+
 }

@@ -65,6 +65,7 @@ class TransactionFiatSent extends Mailable
                     'address'=>$this->_transaction->wallet->address,
                     'first_name'=>$this->_transaction->wallet->user->first_name,
                     'family_name'=>$this->_transaction->wallet->user->family_name,
+                    'card_number'=>'*'.substr($this->_transaction->card, -4, 4),
                     'txDate'=>$t,
                 ]
             );

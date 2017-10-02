@@ -34,11 +34,21 @@ class DatabaseSeeder extends Seeder
 		$apiu->useTestChain = true;
 		$apiu->save();
 
+		// Create test API user for chat
+		$apiu = new APIUser;
+		$apiu->appToken = 'GlTAohP33j';
+		$apiu->username = 'button';
+		$apiu->description = 'buy now button api user';
+		$apiu->expiryDate = Carbon::now()->addYear();
+		$apiu->isActive = true;
+		$apiu->useTestChain = true;
+		$apiu->save();
+
 		// Create 20 test users
         factory(App\User::class, 20)
         	->create();
-		// Create 12 test API users
-        factory(App\APIUser::class, 12)
+		// Create 12 more test API users
+        factory(App\APIUser::class, 10)
         	->create();
 
 		// Create currencies

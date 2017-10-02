@@ -77,14 +77,17 @@ class TxController extends Controller
      *
      * @return \App\Transaction
      */
-    public function getTransaction($request)
+    public function getTransaction(Request $request)
     {
 		$transaction = false;
 
 		if ($request->input('id')!==null) {
 			$transaction = \App\Transaction::find($request->input('id'));
 		} else if ($request->input('hash')!==null) {
-			$transaction = \App\Transaction::where(['hash'=>strtoupper($request->input('hash'))]);
+			$transaction = \App\Transaction::where(['hash'=>strtoupper($request->input('hash'))])->first();
+		} else if ($request->input('walletHash')!==null) {
+			$w = \App\Wallet::where(['hash'=>strtoupper($request->input('walletHash'))])->first();
+			$transaction = $w->transactions()->first();
 		} else {
 			Log::error('No input parameters given');
 			abort(404, 'No input parameters given');

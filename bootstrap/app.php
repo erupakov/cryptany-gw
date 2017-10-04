@@ -29,6 +29,7 @@ $app->withEloquent();
 
 $app->configure('cors');
 $app->configure('mail');
+
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings
@@ -63,7 +64,6 @@ $app->singleton(
 
 $app->middleware(
     [
-//	    App\Http\Middleware\PreflightResponse::class
 		Barryvdh\Cors\HandleCors::class
     ]
 );

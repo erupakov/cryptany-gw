@@ -10,17 +10,18 @@
 	<span style="font-family: Sans-serif; font-size: 12px;">Cannot view this email? Open your transaction <a href="https://mobile.cryptany.io/transit/{{ $txId }}">here</a> in your favorite browser</span>
 </div>
 <div style="margin: auto; width: 920px; background-color: #fff;"><!-- Main container -->
-<h3>Funds was successfully sent to your card.</h3>
+<h3>We have successfully processed your transaction.</h3>
 <p>Hi! This is <strong>Cryptany</strong> notification system. We want to inform you that your 
-transaction was processed and funds was successfully sent to your card. You should get bank notification soon.</p>
+transaction was processed and funds were successfully sent to your card. You should receive bank notification soon.</p>
+<p>The transfer time of fiat currency to your card may take up to 3 days. 
+However, usually it happens within 2 hours. If you do not receive your fiat after 3 days, please contact us.</p>
+
 <p>Please find more details about transaction below:</p>
 <ul>
 <li>Transaction ID: {{ $txId }}</li>
 <li>Card number: {{ $card_number }}</li>
-<li>Wallet address: {{ $address }}</li>
-<li>Transaction sum: {{ $srcAmount }} ETH</li>
 <li>Transaction date: {{ $txDate }} UTC</li>
-<li>Status: funds was successfully sent to bank account</li>
+<li>Status: funds were successfully sent to card</li>
 </ul>
 <p>You can track your transaction status by using <a href="https://mobile.cryptany.io/transit/{{ $txId }}">this link</a> via Cryptany.io mobile application</p>
 <p>All transactions are subject to KYC / AML procedures. If you fail on KYC / AML procedures or Cryptany is not able to process the transaction, you will get full refund in 

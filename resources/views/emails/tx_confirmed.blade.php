@@ -10,14 +10,13 @@
 	<span style="font-family: Sans-serif; font-size: 12px;">Cannot view this email? Open your transaction <a href="https://mobile.cryptany.io/transit/{{ $txId }}">here</a> in your favorite browser</span>
 </div>
 <div style="margin: auto; width: 920px; background-color: #fff;"><!-- Main container -->
-<h3>Your transaction was confirmed by the blockchain</h3>
+<h3>Your transaction was confirmed by blockchain</h3>
 <p>Hi! This is <strong>Cryptany</strong> notification system. We want to inform you that your 
-transaction was confirmed by blockchain and we currently processing it. You will get your funds on your bank account soon.</p>
+transaction was confirmed by blockchain and we are currently processing it.</p>
 <p>Please find more details about transaction below:</p>
 <ul>
 <li>Transaction ID: {{ $txId }}</li>
 <li>Wallet address: {{ $address }}</li>
-<li>Transaction sum: {{ $srcAmount }} ETH</li>
 <li>Transaction date: {{ $txDate }} UTC</li>
 <li>QR code: <img src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl={{ $address }}&choe=UTF-8" alt="address qr code"></li>
 </ul>

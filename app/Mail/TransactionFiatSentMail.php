@@ -27,9 +27,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
  * @license  Apache Common License 2.0
  * @link     http://cgw.cryptany.io
  */
-class TransactionConfirmed extends Mailable
+class TransactionFiatSentMail extends Mailable
 {
     use Queueable, SerializesModels;
+
+	public $subject = 'Cryptany transaction completed';
+	public $from = [
+			['address'=>'support@cryptany.io', 'name'=>'Cryptany support']
+		];
 
     private $_transaction;
 
@@ -54,8 +59,7 @@ class TransactionConfirmed extends Mailable
 		$t = $this->_transaction->created_at;
 		$t->timezone = new \DateTimeZone('UTC');
 
-        return $this->view('emails.tx_confirmed')
-            ->from(['address'=>'support@cryptany.io', 'name'=>'Cryptany notification'])
+        return $this->view('emails.tx_fiatsent')
             ->with(
                 [
                     'txId'=>$this->_transaction->wallet->hash,
@@ -64,6 +68,7 @@ class TransactionConfirmed extends Mailable
                     'address'=>$this->_transaction->wallet->address,
                     'first_name'=>$this->_transaction->wallet->user->first_name,
                     'family_name'=>$this->_transaction->wallet->user->family_name,
+                    'card_number'=>'*'.substr($this->_transaction->card, -4, 4),
                     'txDate'=>$t,
                 ]
             );

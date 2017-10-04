@@ -31,7 +31,7 @@ class TransactionCreatedEvent extends Event
      *
      * @var $transaction
      */
-    public $transaction;
+	public $txid;
 
     /**
      * Property to hold wallet hash
@@ -49,7 +49,7 @@ class TransactionCreatedEvent extends Event
      */
     public function __construct(Transaction $t)
     {
-        $this->transaction = $t;
-        $_walletHash = $t->wallet->hash;
+		$this->txid = $t->id;
+        $this->_walletHash = $t->wallet->hash;
     }
 }

@@ -12,13 +12,13 @@
 <div style="margin: auto; width: 920px; background-color: #fff;"><!-- Main container -->
 <h3>Transaction was confirmed by the blockchain</h3>
 <p>Hi! This is <strong>Cryptany</strong> notification system. We want to inform you that your 
-transaction was confirmed by blockchain and we currently processing it. You will get your funds on your bank account soon.</p>
+transaction was confirmed by blockchain and we are currently processing it.</p>
 <p>Please find more details about transaction below:</p>
 <ul>
 <li>Transaction ID: {{ $txId }}</li>
 <li>Wallet address: {{ $address }}</li>
-<li>Transaction source sum: {{ $srcAmount }} ETH</li>
-<li>Transaction destination sum: {{ $dstAmount }} USD</li>
+<li>Received sum: {{ $srcAmount }} ETH</li>
+<li>Transaction sum to receive: {{ $dstAmount }} ETH</li>
 <li>Transaction date: {{ $txDate }} UTC</li>
 <li>Card number: {{ $card }}</li>
 </ul>

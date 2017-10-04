@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use \App\Events\TransactionStatusEvent;
 use \App\Events\TransactionStatusUnconfirmedEvent;
 use \App\Events\TransactionStatusConfirmedEvent;
+use \App\Jobs\SetFiatSentJob;
 
 /**
  * Ethereum blockchain actions controller, used to perform actions for Ethereum 
@@ -201,9 +202,12 @@ class EthController extends Controller
                 $transaction->status = \App\TransactionStatus::CONFIRMED; // confirmed
                 
                 Event::fire(new TransactionStatusConfirmedEvent($transaction));
+				$j = new \App\Jobs\SetFiatSentJob($wallet);
+				$j->delay(Carbon::now()->addMinutes(10));
+				dispatch($j);
             } elseif ($request->header('X-Eventtype')=='unconfirmed-tx') {
                 $transaction->status = \App\TransactionStatus::UNCONFIRMED; // unconfirmed
-                
+
                 Event::fire(new TransactionStatusUnconfirmedEvent($transaction));
             } else {
                 Log::warning('Got unknown event!');

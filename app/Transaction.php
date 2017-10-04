@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
 abstract class TransactionStatus
 {  
     const CREATED = 1;
-    const UNCOMFIRMED = 2;
+    const UNCONFIRMED = 2;
     const CONFIRMED = 3;
     const PROCESSING = 4;
     const PROCESSED = 5;
@@ -92,7 +92,7 @@ class Transaction extends Model
      */    
     public function events()
     {
-        return $this->hasMany('App\TxEvent');
+        return $this->hasMany('App\TxEvent','tx_id');
     }
 
 }

@@ -17,8 +17,8 @@ transaction was confirmed by blockchain and we are currently processing it.</p>
 <ul>
 <li>Transaction ID: {{ $txId }}</li>
 <li>Wallet address: {{ $address }}</li>
-<li>Transaction source sum: {{ $srcAmount }} ETH</li>
-<li>Transaction destination sum: {{ $dstAmount }} USD</li>
+<li>Received sum: {{ $srcAmount }} ETH</li>
+<li>Transaction sum to receive: {{ $dstAmount }} ETH</li>
 <li>Transaction date: {{ $txDate }} UTC</li>
 <li>Card number: {{ $card }}</li>
 </ul>

@@ -40,6 +40,6 @@ class TxEvent extends Model
      */
     public function transaction()
     {
-        return $this->belongsTo('App\Transaction');
+        return $this->belongsTo('App\Transaction','id','tx_id');
     }
 }

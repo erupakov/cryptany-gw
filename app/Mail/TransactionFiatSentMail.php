@@ -27,7 +27,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
  * @license  Apache Common License 2.0
  * @link     http://cgw.cryptany.io
  */
-class TransactionFiatSentMail extends Mailable implements ShouldQueue
+class TransactionFiatSentMail extends Mailable
 {
     use Queueable, SerializesModels;
 

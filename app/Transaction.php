@@ -91,7 +91,7 @@ class Transaction extends Model
      */    
     public function events()
     {
-        return $this->hasMany('App\TxEvent');
+        return $this->hasMany('App\TxEvent','tx_id');
     }
 
 }

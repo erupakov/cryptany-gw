@@ -27,7 +27,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
  * @license  Apache Common License 2.0
  * @link     http://cgw.cryptany.io
  */
-class TransactionConfirmedMail extends Mailable implements ShouldQueue
+class TransactionConfirmedMail extends Mailable
 {
     use Queueable, SerializesModels;
 

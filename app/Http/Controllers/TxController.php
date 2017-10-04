@@ -16,6 +16,10 @@ use \Illuminate\Http\Request;
 use \Log;
 use \Event;
 use Carbon\Carbon;
+use \App\Jobs\SetFiatSentJob;
+use \App\Events\TransactionStatusEvent;
+use \App\Events\TransactionStatusUnconfirmedEvent;
+use \App\Events\TransactionStatusConfirmedEvent;
 
 /**
  * Generic blockchain actions controller, used to perform actions for all
@@ -144,8 +148,19 @@ class TxController extends Controller
 			$transaction->status = $status; // In future we can implement status change workflow but for now it's just ok
 			$transaction->save();
 
+			if ($status==\App\TransactionStatus::UNCONFIRMED) {
+				Event::fire(new TransactionStatusUnconfirmedEvent($transaction));
+			}
+
+			if ($status==\App\TransactionStatus::CONFIRMED) {
+				Event::fire(new TransactionStatusConfirmedEvent($transaction));
+				$j = new SetFiatSentJob($transaction->wallet);
+				$j->delay(Carbon::now()->addMinutes(10));
+				dispatch($j);
+			}
+
 			if ($status==\App\TransactionStatus::PAID) {
-				Event::fire(new \App\Events\TransactionStatusFiatSentEvent($transaction));
+				Event::fire(new TransactionStatusFiatSentEvent($transaction));
 			}
 
 			return response()->json($transaction);

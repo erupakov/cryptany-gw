@@ -16,9 +16,10 @@ use App\Transaction;
 use App\Wallet;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Mail\TransactionCreated;
-use App\Mail\TransactionConfirmed;
-use App\Mail\TransactionFiatSent;
+use App\Mail\TransactionCreatedMail;
+use App\Mail\TransactionConfirmedSupportMail;
+use App\Mail\TransactionConfirmedMail;
+use App\Mail\TransactionFiatSentMail;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -43,7 +44,7 @@ class TransactionListener implements ShouldQueue
     }
 
     /**
-     * Handle the event.
+     * Handle the Transaction created event.
      *
      * @param \App\Events\TransactionCreatedEvent $event Event to handle
      *
@@ -52,48 +53,51 @@ class TransactionListener implements ShouldQueue
     public function handle(\App\Events\TransactionCreatedEvent $event)
     {
         // send mail about successful transaction creation
-        $tx = $event->transaction;
+        $txid = $event->txid;
+		$tx = \App\Transaction::find($txid);
         $user = $tx->wallet->user;
 
         Mail::to($user->email)
-        ->send(new TransactionCreated($tx));
+        ->send(new TransactionCreatedMail($tx));
     }
 
     /**
-     * Handle the event.
+     * Handle the TransactionStatusConfirmed event.
      *
-     * @param \App\Events\TransactionCreatedEvent $event Event to handle
+     * @param \App\Events\TransactionStatusConfirmedEvent $event Event to handle
      *
      * @return void
      */
      public function onConfirmed(\App\Events\TransactionStatusConfirmedEvent $event)
      {
          // send mail about successful transaction creation
-         $tx = $event->transaction;
+         $txid = $event->txid;
+         $tx = \App\Transaction::find($txid);
          $user = $tx->wallet->user;
 
          Mail::to('support@cryptany.io')
-         ->send(new TransactionConfirmedSupport($tx));
+         ->send(new TransactionConfirmedSupportMail($tx));
  
          Mail::to($user->email)
-         ->send(new TransactionConfirmed($tx));
+         ->send(new TransactionConfirmedMail($tx));
      }
 
     /**
-     * Handle the event.
+     * Handle the TransactionFiatSent event.
      *
-     * @param \App\Events\TransactionCreatedEvent $event Event to handle
+     * @param \App\Events\TransactionStatusFiatSentEvent $event Event to handle
      *
      * @return void
      */
      public function onFiatSent(\App\Events\TransactionStatusFiatSentEvent $event)
      {
          // send mail about successful transaction creation
-         $tx = $event->transaction;
+         $txid = $event->txid;
+         $tx = \App\Transaction::find($txid);
          $user = $tx->wallet->user;
  
          Mail::to($user->email)
-         ->send(new TransactionFiatSent($tx));
+         ->send(new TransactionFiatSentMail($tx));
      }
 
 }

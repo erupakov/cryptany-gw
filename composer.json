@@ -14,7 +14,8 @@
         "squizlabs/php_codesniffer": "^3.0",
         "pusher/pusher-php-server": "^3.0",
         "barryvdh/laravel-cors": "^0.9.3",
-        "illuminate/mail": "^5.5"
+        "illuminate/mail": "^5.5",
+        "guzzlehttp/guzzle": "~6.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

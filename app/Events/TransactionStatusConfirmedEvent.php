@@ -27,12 +27,13 @@ use Illuminate\Support\Facades\Mail;
  */
 class TransactionStatusConfirmedEvent extends Event implements ShouldBroadcast
 {
+
     /**
      * Property to hold event data
      *
      * @var $transaction
      */
-    public $transaction;
+	public $txid;
 
     /**
      * Property to hold wallet hash
@@ -50,8 +51,8 @@ class TransactionStatusConfirmedEvent extends Event implements ShouldBroadcast
      */
     public function __construct(Transaction $t)
     {
-        $this->transaction = $t;
-        $_walletHash = $t->wallet->hash;
+		$this->txid = $t->id;
+        $this->_walletHash = $t->wallet->hash;
     }
 
     /**
@@ -61,7 +62,6 @@ class TransactionStatusConfirmedEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-//        return ['transactions'.$this->_walletHash];
-        return ['transactions.'.$this->transaction->wallet->hash];
+        return ['transactions.'.$this->_wallethash];
     }
 }

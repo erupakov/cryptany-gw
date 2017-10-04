@@ -13,8 +13,8 @@ class TransactionStatusUnconfirmedEvent extends Event implements ShouldBroadcast
 	 *
 	 * @var $transaction
 	 */
-	public $transaction;
-	private $walletHash;
+	public $txid;
+	private $_walletHash;
 
     /**
      * Create a new event instance.
@@ -23,8 +23,8 @@ class TransactionStatusUnconfirmedEvent extends Event implements ShouldBroadcast
      */
     public function __construct(Transaction $t)
     {
-        $this->transaction = $t;
-		$walletHash = $t->wallet->hash;
+		$this->txid = $t->id;
+		$this->_walletHash = $t->wallet->hash;
     }
 
     /**
@@ -34,7 +34,6 @@ class TransactionStatusUnconfirmedEvent extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-//        return ['transactions'.$this->walletHash];
-        return ['transactions.'.$this->transaction->wallet->hash];
+        return ['transactions.'.$this->_walletHash];
     }
 }

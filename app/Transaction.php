@@ -26,6 +26,7 @@ abstract class TransactionStatus
     const PROCESSED = 5;
     const PAID = 6;
     const CLOSED = 7;
+	const ERROR_GENERAL = 200;
 }
 
 /**

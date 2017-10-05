@@ -154,9 +154,9 @@ class TxController extends Controller
 
 			if ($status==\App\TransactionStatus::CONFIRMED) {
 				Event::fire(new TransactionStatusConfirmedEvent($transaction));
-				$j = new SetFiatSentJob($transaction->wallet);
-				$j->delay(Carbon::now()->addMinutes(10));
-				dispatch($j);
+//				$j = new SetFiatSentJob($transaction->wallet);
+//				$j->delay(Carbon::now()->addMinutes(10));
+//				dispatch($j);
 			}
 
 			if ($status==\App\TransactionStatus::PAID) {

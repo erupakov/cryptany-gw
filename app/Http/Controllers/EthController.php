@@ -202,9 +202,9 @@ class EthController extends Controller
                 $transaction->status = \App\TransactionStatus::CONFIRMED; // confirmed
                 
                 Event::fire(new TransactionStatusConfirmedEvent($transaction));
-				$j = new \App\Jobs\SetFiatSentJob($wallet);
-				$j->delay(Carbon::now()->addMinutes(10));
-				dispatch($j);
+				//$j = new \App\Jobs\SetFiatSentJob($wallet);
+				//$j->delay(Carbon::now()->addMinutes(10));
+				//dispatch($j);
             } elseif ($request->header('X-Eventtype')=='unconfirmed-tx') {
                 $transaction->status = \App\TransactionStatus::UNCONFIRMED; // unconfirmed
 

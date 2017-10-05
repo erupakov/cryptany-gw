@@ -41,6 +41,7 @@ class CreateUsersTable extends Migration
                 $table->string('password')->default('Qwerty123')->nullable(true);
                 $table->string('pin')->default('1111')->index();
                 $table->boolean('isActive')->default(false);
+				$table->integer('type')->default(1)->comment('Type of user: 1: mobile app');
                 $table->timestamps();
             }
         );

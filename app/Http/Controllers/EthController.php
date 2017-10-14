@@ -267,6 +267,85 @@ class EthController extends Controller
     }
 
     /**
+     * Method for handling creation of new transient wallet API method
+     *
+     * @param \Illuminate\Http\Request $request Request to process
+     *
+     * @method registerMagentoTransaction
+     *
+     * @return nothing
+     */
+    public function registerMagentoTransaction(Request $request)
+    {
+        // check if all required parameters are in place
+        if ($request->input('email')==null) {
+            Log::error('email parameter is missing');
+            abort(404, 'email parameter is mandatory for this method');
+        }
+
+        $apiuser = $this->_checkAPIUserExists($request->header('Authorization'));
+
+        if ($apiuser===false || !isset($apiuser)) {
+            Log::error('Wrong or empty appToken presented');
+            abort(401, "Wrong username/appToken pair");
+        }
+
+        // Find customer by his email
+        $user = \App\User::firstOrCreate(['email' => $request->input('email')]);
+        $user->first_name = 'None';
+        $user->family_name = 'None';
+        $user->save(); // in case the user is just created
+
+        $wallet = new \App\Wallet;
+        $wallet->apiUserId = $apiuser->id;
+        $wallet->userId = $user->id;
+
+        try {
+            $addressClient = new \BlockCypher\Client\AddressClient(
+                $this->_apiContext
+            );
+            $addressKeyChain = $addressClient->generateAddress();
+            Log::info('New address generated:' . $addressKeyChain->getAddress());
+
+            // fill in newly created wallet
+            $wallet->publicKey = $addressKeyChain->getPublic();
+            $wallet->privateKey = $addressKeyChain->getPrivate();
+            $wallet->address = $addressKeyChain->getAddress();
+            $wallet->wif = $addressKeyChain->getWif();
+            $wallet->isActive = true;
+	        $wallet->type = 2; // Magento transaction
+            $wallet->expirationTime = Carbon::now()->addYear();
+            $wallet->hash = strtoupper(str_random(8));
+            $wallet->save();
+        } catch (Exception $ex) {
+            Log::error('Error creating new wallet:'.$ex->getData());
+            abort(401, 'Something went terribly wrong');
+        }
+
+        $transaction = new \App\Transaction;
+        $transaction->txHash = strtoupper(str_random(8)); // generate transaction id
+        $transaction->walletId = $wallet->id;
+        $transaction->srcAmount = str_replace(',','.',$request->input('srcAmount'));
+        $transaction->dstAmount = str_replace(',','.',$request->input('dstAmount'));
+        $transaction->gasAmount = 120000; // 120000 satoshis for now
+        $transaction->srcCurrencyId = 4; // ETH
+        $transaction->dstCurrencyId = 1; // USD
+        $transaction->card = $request->input('url');
+        $transaction->valDate = $request->input('orderId');
+        $transaction->status = \App\TransactionStatus::CREATED; // created
+        $transaction->save();
+        Event::fire(new \App\Events\TransactionCreatedEvent($transaction));
+
+        $this->_setupHooks($wallet->address);
+        return json_encode(
+            [
+                'address'=> $wallet->address, 
+                'walletHash'=>$wallet->hash
+            ]
+        );
+    }
+
+    /**
      * Check user authentication
      *
      * @param string $authHeader authentication header from the request

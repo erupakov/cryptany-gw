@@ -70,16 +70,29 @@ class TransactionListener implements ShouldQueue
      */
      public function onConfirmed(\App\Events\TransactionStatusConfirmedEvent $event)
      {
-         // send mail about successful transaction creation
-         $txid = $event->txid;
-         $tx = \App\Transaction::find($txid);
-         $user = $tx->wallet->user;
+        // send mail about successful transaction creation
+        $txid = $event->txid;
+        $tx = \App\Transaction::find($txid);
+        $user = $tx->wallet->user;
 
-         Mail::to('support@cryptany.io')
-         ->send(new TransactionConfirmedSupportMail($tx));
+		// check wallet type
+		if ($tx->wallet->type==1) { // this is mobile app operation
+
+	        Mail::to('support@cryptany.io')
+	        ->send(new TransactionConfirmedSupportMail($tx));
  
-         Mail::to($user->email)
-         ->send(new TransactionConfirmedMail($tx));
+    	    Mail::to($user->email)
+	        ->send(new TransactionConfirmedMail($tx));
+		} elseif ($tx->wallet->type==2) { // this is a magento plugin operation
+			// report status to magento plugin
+			$url = $tx->card.'?orderid='.$tx->valDate.'&status=confirmed';
+			$res = file_get_contents($url,false);
+			if ($res===false) {
+				Log::error('Error reporting confirmed status to Magento plugin');
+			} else {
+				Log::info('Confirmed status successfully reported to Magento plugin');
+			}
+		}
      }
 
     /**

@@ -44,6 +44,16 @@ class DatabaseSeeder extends Seeder
 		$apiu->useTestChain = true;
 		$apiu->save();
 
+		// Create test API user for magento user
+		$apiu = new APIUser;
+		$apiu->appToken = '8XgtiEGJI2';
+		$apiu->username = 'magento84237';
+		$apiu->description = 'magento 1.x payment plugin';
+		$apiu->expiryDate = Carbon::now()->addYear();
+		$apiu->isActive = true;
+		$apiu->useTestChain = true;
+		$apiu->save();
+
 		// Create 20 test users
         factory(App\User::class, 20)
         	->create();

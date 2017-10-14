@@ -16,6 +16,6 @@ class Currency extends Model
 
     public function rates()
     {
-    	return $this->hasMany('App\CurrencyRate');
+    	return $this->hasMany('App\CurrencyRate','currencyId');
     }
 }

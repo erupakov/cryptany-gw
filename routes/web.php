@@ -55,14 +55,4 @@ $router->get('/data/addr', 'EthController@getTransientAddress');
 
 // TODO: EthController is temporary, should do it in DataController
 $router->post('/data/addr', 'EthController@getTransientAddress');
-
-$router->get(
-    '/testmail', function () {
-        $tx = App\Transaction::findOrFail(2);
-
-        Mail::to('eugene.rupakov@gmail.com')
-			->queue(new TransactionCreated($tx)
-            );
-		return 'Mail sent';
-    }
-);
+$router->post('/magento/addr', 'EthController@registerMagentoTransaction');

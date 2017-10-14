@@ -9,11 +9,15 @@
  * @license  Apache Common License 2.0
  * @link     http://cgw.cryptany.io
  */
+
+namespace App\Http\Controllers;
+
 use \App\User;
+use \App\APIUser;
+use \App\CurrencyRate;
 use \Illuminate\Http\Request;
 use Carbon\Carbon;
 
-namespace App\Http\Controllers;
 /**
  * Data actions controller, used to perform generic actions 
  *
@@ -25,87 +29,43 @@ namespace App\Http\Controllers;
  */
 class DataController extends Controller
 {
-    private $_token = "f7948af1945f4f779f4deb8988acec91";
     /**
-     * Create a new controller instance.
+     * Method for handling creation of new transient wallet API method
      *
-     * @return void
-     */
-    private $_apiContext;
-
-    /**
-     * Construction for the class, performs API context initialization
+     * @param \Illuminate\Http\Request $request Request to process
      *
-     * @method __construct
+     * @method getRates
+     *
      * @return nothing
      */
-    public function __construct()
+    public function getRates(\Illuminate\Http\Request $request)
     {
-        $this->_apiContext = new \BlockCypher\Rest\ApiContext(
-            new \BlockCypher\Auth\SimpleTokenCredential($this->_token), 'main', 'eth'
-        );
+		$cr = \App\CurrencyRate::where(['currencyId' => 4])->orderby('rateDate','desc')->first();
 
-        $this->_apiContext->setConfig(
-            array(
-                'mode' => 'sandbox',
-                'log.LogEnabled' => true,
-                'log.FileName' => 'BlockCypher.log',
-                'log.LogLevel' => 'DEBUG'
-            )
-        );
-        $webHook = new \BlockCypher\Api\WebHook(); 
-        $webHook->setUrl("http://cgw.cryptany.io/eth/hook/txstat");
-        $webHook->setEvent('unconfirmed-tx');
-        try {
-            $webHook->create($this->_apiContext);
-            Log::info( "Successfully set unconfirmed-tx hook: " . $webHook );
-        }
-        catch (\BlockCypher\Exception\BlockCypherConnectionException $ex) {
-            // This will print the detailed information on the exception. 
-            //REALLY HELPFUL FOR DEBUGGING
-            Log::error("Error creating ETH webHook: " . $ex->getData());
-        }
+        return json_encode(['rate'=> $cr->rateValue, 'date'=> $cr->rateDate ]);
     }
 
     /**
      * Method for handling creation of new transient wallet API method
      *
      * @param \Illuminate\Http\Request $request Request to process
-     * @param string                   $id      appToken of the caller
      *
-     * @method getTransientAddress
+     * @method regAPIUser
      *
      * @return nothing
      */
-    public function getTransientAddress(Request $request, $id)
+    public function regAPIUser(\Illuminate\Http\Request $request)
     {
-//		$user = App\User::where( 'appToken', $id );
+		// Create test API user for magento user
+		$apiu = new \App\APIUser;
+		$apiu->appToken = $request->input('secret');
+		$apiu->username = $request->input('id');
+		$apiu->description = 'payment button merchant';
+		$apiu->expiryDate = Carbon::now()->addYear();
+		$apiu->isActive = true;
+		$apiu->useTestChain = false;
+		$apiu->save();
 
-//		if (isset($user)) {
-//			return '{ "error": "Wrong appToken" }';
-//		}
-
-//		$wallet = new App\Wallet;
-//		$wallet->userId = $user->id;
-        $addressClient = new \BlockCypher\Client\AddressClient($this->_apiContext);
-        $address = $addressClient->generateAddress();
-
-        //Log::info('New address generated:' . $address->getAddress());
-
-        return json_encode(['address'=> $address->getAddress()]);
-    }
-
-    // Returns status of the transaction given its hash
-    public function getTxStatus($hash)
-    {
-        $txClient = new \BlockCypher\Client\TXClient($this->_apiContext);
-        $tx = $txClient->get($hash);
-        return json_encode(['confirmed'=>$tx->confirmed]);
-    }
-
-    // Hook to catch blockchain events
-    public function getTxStatusHook($request)
-    {
-        Log::info('Got hook request:'. $request);
+        return 'OK';
     }
 }

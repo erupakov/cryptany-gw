@@ -49,6 +49,8 @@ $router->post('/user/verifycode', 'UserController@processVerifyCode');
 $router->post('/user/signup', 'UserController@processSignUp');
 $router->post('/user/resetpwd', 'UserController@processResetPassword');
 $router->post('/data/rate', 'DataController@getRates');
+$router->get('/data/rate', 'DataController@getRates');
+$router->get('/data/regapiuser', 'DataController@regAPIUser');
 
 // TODO: EthController is temporary, should do it in DataController
 $router->get('/data/addr', 'EthController@getTransientAddress');

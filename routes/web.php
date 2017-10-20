@@ -58,3 +58,8 @@ $router->get('/data/addr', 'EthController@getTransientAddress');
 // TODO: EthController is temporary, should do it in DataController
 $router->post('/data/addr', 'EthController@getTransientAddress');
 $router->post('/magento/addr', 'EthController@registerMagentoTransaction');
+
+$router->get('/testevent', function() {
+	$transaction = \App\Transaction::find(67);
+	Event::fire(new \App\Events\TransactionStatusConfirmedEvent($transaction));
+});

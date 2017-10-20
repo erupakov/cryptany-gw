@@ -14,6 +14,7 @@ namespace App\Listeners;
 use App\User;
 use App\Transaction;
 use App\Wallet;
+use \Log;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Mail\TransactionCreatedMail;
@@ -33,6 +34,13 @@ use Illuminate\Support\Facades\Mail;
  */
 class TransactionListener implements ShouldQueue
 {
+    /**
+     * Holds token for blockchain API
+     *
+     * @var _token
+     */
+    const BITCHAIN_TOKEN = "f7948af1945f4f779f4deb8988acec91";
+
     /**
      * Create the event listener.
      *
@@ -84,14 +92,22 @@ class TransactionListener implements ShouldQueue
     	    Mail::to($user->email)
 	        ->send(new TransactionConfirmedMail($tx));
 		} elseif ($tx->wallet->type==2) { // this is a magento plugin operation
-			// report status to magento plugin
-			$url = $tx->card.'?orderid='.$tx->valDate.'&status=confirmed';
-			$res = file_get_contents($url,false);
-			if ($res===false) {
-				Log::error('Error reporting confirmed status to Magento plugin');
-			} else {
-				Log::info('Confirmed status successfully reported to Magento plugin');
+			try {
+				// report status to magento plugin
+				$url = $tx->card.'?orderid='.$tx->valDate.'&status=confirmed';
+				$res = @file_get_contents($url);
+				if ($res===false) {
+					Log::error('Error reporting confirmed status to Magento plugin');
+				} else {
+					Log::info('Confirmed status successfully reported to Magento plugin');
+				}
+			} catch (ErrorException $ex) {
+				Log::error('Error reporting confirmed status to Magento plugin:'.$ex->getData());
 			}
+		}
+
+		if ($tx->wallet->type!=1) { // this is not mobile app transaction, process with sending money to smart contract
+			$this->_sendToSmartContract($tx);
 		}
      }
 
@@ -113,4 +129,50 @@ class TransactionListener implements ShouldQueue
          ->send(new TransactionFiatSentMail($tx));
      }
 
+    /**
+     * Transfer money to smart contract
+     *
+     * @param Transaction $tx Transaction to handle
+     *
+     * @return void
+     */
+	private function _sendToSmartContract($tx) {
+		Log::info('Sending transaction to Node.js');
+		$ev = $tx->events()->first();
+		$ev_json = json_decode($ev->report, true);
+
+		$total = $ev_json['total'];
+
+        $postdata = http_build_query(
+            array(
+                'private' => $tx->wallet->privateKey,
+                'gas_limit' => 25000,
+                'toPerson' => '0x'.$tx->wallet->apiuser->description,
+                'comment' => 'Merchant transaction',
+                'trustbrokers' => [],
+                'value' => number_format($total, 0, '', ''),
+            )
+        );
+
+        // Generate wallet address:
+        // create POST context to send data request
+        $context = stream_context_create(
+            array(
+                'http' => array(
+                    'method' => 'POST',
+                    'header' => 'Content-Type: application/x-www-form-urlencoded',
+                    'content' => $postdata,
+                ),
+            )
+        );
+
+        // send actual request to register transaction
+        $result = @file_get_contents(
+            $file = "http://localhost:3000/sendMoney",
+//            $file = "http://localhost:3000/estimateGas",
+            $use_include_path = false,
+            $context
+        );
+		Log::debug($result);
+	}
 }

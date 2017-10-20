@@ -60,7 +60,7 @@ class DataController extends Controller
 		$apiu = new \App\APIUser;
 		$apiu->appToken = $request->input('secret');
 		$apiu->username = $request->input('id');
-		$apiu->description = 'payment button merchant';
+		$apiu->description = $request->input('w');
 		$apiu->expiryDate = Carbon::now()->addYear();
 		$apiu->isActive = true;
 		$apiu->useTestChain = false;
